@@ -13,7 +13,7 @@ public:
         byte_separator(separator){};
   ~engine() = default;
 
-  std::string process(const std::vector<uint8_t> &raw_data);
+  std::string process(const std::vector<uint8_t> &raw_data) const;
 
 private:
   bool use_hex_prefix{false};

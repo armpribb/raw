@@ -55,7 +55,7 @@ std::string combine_to_string(const std::vector<std::string> &hex_strings,
 }
 } // namespace detail
 
-std::string engine::process(const std::vector<uint8_t> &raw_data) {
+std::string engine::process(const std::vector<uint8_t> &raw_data) const {
   std::vector<std::string> hex_strings{};
 
   detail::convert_to_hex(hex_strings, raw_data, use_hex_prefix);
