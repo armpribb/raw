@@ -17,4 +17,4 @@ if(WIN32)
 else()
 endif()
 
-target_link_libraries(raw PRIVATE nowide)
+target_link_libraries(raw PRIVATE nowide User32)

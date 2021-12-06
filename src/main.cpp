@@ -9,10 +9,9 @@ int main(int argc, char *argv[]) {
 
   nowide::args a(argc, argv);
 
-  // input::from_console input{};
-  input::from_file input{{"text.txt"}};
+  input::from_console input{};
   format::engine formatter{};
-  output::to_console output{};
+  output::to_clipboard output{};
 
   const auto cnv = converter(input, formatter, output);
 

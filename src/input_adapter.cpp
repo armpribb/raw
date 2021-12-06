@@ -38,10 +38,6 @@ std::vector<uint8_t> from_console::read() const {
 
   std::getline(nowide::cin, input_str);
 
-  if (input_str.back() == '\r') {
-    input_str.pop_back();
-  }
-
   if (!input_str.empty()) {
     for (const auto &c : input_str) {
       output_vec.push_back(static_cast<uint8_t>(c));
