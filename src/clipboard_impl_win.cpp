@@ -1,7 +1,7 @@
 #include "clipboard_impl.h"
-#include "nowide/convert.hpp"
 
 #include <Windows.h>
+#include <nowide/convert.hpp>
 #include <nowide/iostream.hpp>
 
 namespace output {
