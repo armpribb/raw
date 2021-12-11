@@ -2,3 +2,6 @@
 	path = nowide
 	url = https://github.com/boostorg/nowide.git
 	branch = standalone
+[submodule "cxxopts"]
+	path = cxxopts
+	url = https://github.com/jarro2783/cxxopts.git
