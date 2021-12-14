@@ -2,7 +2,7 @@ target_sources(raw
     PRIVATE
         main.cpp
         converter.cpp
-        formatter.cpp
+        format.cpp
         input_adapter.cpp
         output_adapter.cpp
 )
