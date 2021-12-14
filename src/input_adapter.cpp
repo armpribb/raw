@@ -35,7 +35,7 @@ void read_file_as_binary(std::vector<uint8_t> &byte_vec,
 std::vector<uint8_t> from_console::read() const {
   std::vector<uint8_t> output_vec{};
 
-  std::string input_str;
+  std::string input_str{};
 
   std::getline(nowide::cin, input_str);
 

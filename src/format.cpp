@@ -1,4 +1,4 @@
-#include "formatter.h"
+#include "format.h"
 
 #include <algorithm>
 #include <iomanip>
@@ -58,13 +58,14 @@ std::string combine_to_string(const std::vector<std::string> &hex_strings,
 std::string engine::process(const std::vector<uint8_t> &raw_data) const {
   std::vector<std::string> hex_strings{};
 
-  detail::convert_to_hex(hex_strings, raw_data, use_hex_prefix);
+  detail::convert_to_hex(hex_strings, raw_data, config.use_hex_prefix);
 
-  if (use_uppercase) {
+  if (config.use_uppercase) {
     detail::convert_to_uppercase(hex_strings);
   }
 
-  auto output_string = detail::combine_to_string(hex_strings, byte_separator);
+  const auto output_string =
+      detail::combine_to_string(hex_strings, config.byte_separator);
 
   return output_string;
 }
