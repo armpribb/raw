@@ -1,10 +1,11 @@
 target_sources(raw
     PRIVATE
         main.cpp
-        converter.cpp
+        convert.cpp
         format.cpp
         input_adapter.cpp
         output_adapter.cpp
+        parse.cpp
 )
 
 if(WIN32)
@@ -14,7 +15,7 @@ else()
     target_sources(raw PRIVATE clipboard_impl_unix.cpp)
 endif()
 
-target_link_libraries(raw PRIVATE nowide)
+target_link_libraries(raw PRIVATE cxxopts nowide)
 
 if(WIN32)
     target_link_libraries(raw PRIVATE User32)

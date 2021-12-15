@@ -1,4 +1,4 @@
-#include "converter.h"
+#include "convert.h"
 
 bool converter::proceed() const {
   const auto raw_input = input_adapter.read();
