@@ -7,6 +7,7 @@
 namespace input {
 class interface {
 public:
+  virtual ~interface() = default;
   virtual std::vector<uint8_t> read() const = 0;
 };
 
@@ -25,5 +26,10 @@ private:
 
   std::vector<std::string> filenames;
   mutable size_t index = 0;
+};
+
+class invalid : public interface {
+public:
+  std::vector<uint8_t> read() const override { return {}; };
 };
 } // namespace input

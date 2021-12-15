@@ -8,6 +8,7 @@
 namespace output {
 class interface {
 public:
+  virtual ~interface() = default;
   virtual void write(const std::string &str) const = 0;
 };
 
@@ -28,5 +29,9 @@ public:
 class to_file : public interface {
 public:
   void write(const std::string &str) const override;
+};
+
+class invalid : public interface {
+  void write(const std::string &str) const override { (void)str; };
 };
 } // namespace output
