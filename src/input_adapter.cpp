@@ -1,5 +1,6 @@
 #include "input_adapter.h"
 
+#include <iterator>
 #include <nowide/fstream.hpp>
 #include <nowide/iostream.hpp>
 #include <stdexcept>

@@ -7,10 +7,6 @@ target_sources(raw
         output_adapter.cpp
 )
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-else()
-endif()
-
 if(WIN32)
     target_compile_definitions(raw PRIVATE UNICODE)
     target_sources(raw PRIVATE clipboard_impl_win.cpp)
@@ -18,4 +14,9 @@ else()
     target_sources(raw PRIVATE clipboard_impl_unix.cpp)
 endif()
 
-target_link_libraries(raw PRIVATE nowide User32)
+target_link_libraries(raw PRIVATE nowide)
+
+if(WIN32)
+    target_link_libraries(raw PRIVATE User32)
+else()
+endif()
