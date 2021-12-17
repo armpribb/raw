@@ -1,5 +1,6 @@
 #include "parse.h"
 
+#include <cxxopts.hpp>
 #include <memory>
 #include <nowide/iostream.hpp>
 
@@ -7,7 +8,7 @@
 #include "output_adapter.h"
 
 namespace parse {
-engine::engine(int argc, char *argv[])
+engine::engine()
     : options("raw", "convert any input to hex-encoded binary output") {
   // clang-format off
   options.add_options()
@@ -18,9 +19,18 @@ engine::engine(int argc, char *argv[])
     ("u,use-uppercase", "convert hex values to uppercase", cxxopts::value<bool>()->default_value("false"))
     ("b,byte-separator", "choose byte separator", cxxopts::value<std::string>()->default_value(" "));
   // clang-format on
-
-  result = options.parse(argc, argv);
 };
+
+bool engine::do_parse(int argc, char **argv) {
+  try {
+    result = options.parse(argc, argv);
+  } catch (cxxopts::OptionException &e) {
+    nowide::cerr << e.what() << "\n\nHelp:\n" << options.help() << "\n";
+    return false;
+  }
+
+  return true;
+}
 
 std::unique_ptr<format::engine> engine::get_format() const {
   format::config config{};

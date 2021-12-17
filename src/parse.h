@@ -10,11 +10,13 @@
 namespace parse {
 class engine {
 public:
-  engine(int argc, char *argv[]);
+  engine();
 
   std::unique_ptr<format::engine> get_format() const;
   std::unique_ptr<input::interface> get_input() const;
   std::unique_ptr<output::interface> get_output() const;
+
+  bool do_parse(int argc, char **argv);
 
 private:
   cxxopts::Options options;
