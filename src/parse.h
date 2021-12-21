@@ -2,6 +2,8 @@
 
 #include <cxxopts.hpp>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "format.h"
 #include "input_adapter.h"
@@ -16,10 +18,20 @@ public:
   std::unique_ptr<input::interface> get_input() const;
   std::unique_ptr<output::interface> get_output() const;
 
-  bool do_parse(int argc, char **argv);
+  void do_parse(int argc, char **argv);
+  void print_output();
+  bool is_valid_non_help_cmd() const;
 
 private:
+  void print_help() const;
+  void queue_message(const char *msg);
+
   cxxopts::Options options;
   cxxopts::ParseResult result;
+
+  bool is_help_cmd = false;
+  bool valid_result = false;
+
+  std::vector<std::string> message_queue{};
 };
 } // namespace parse
