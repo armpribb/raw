@@ -19,6 +19,7 @@ engine::engine()
     ("f,file", "specify file to convert", cxxopts::value<std::vector<std::string>>())
     ("p,use-hex-prefix", "add '0x' prefix to hex values", cxxopts::value<bool>()->default_value("false"))
     ("u,use-uppercase", "convert hex values to uppercase", cxxopts::value<bool>()->default_value("false"))
+    ("g,n-byte-group", "group n bytes together", cxxopts::value<uint8_t>()->default_value("1"))
     ("b,byte-separator", "choose byte separator", cxxopts::value<std::string>()->default_value(" "))
     ("h,help", "print help", cxxopts::value<bool>()->default_value("false"));
   // clang-format on
@@ -64,6 +65,7 @@ std::unique_ptr<format::engine> engine::get_format() const {
 
   config.use_hex_prefix = result["use-hex-prefix"].as<bool>();
   config.use_uppercase = result["use-uppercase"].as<bool>();
+  config.n_byte_group = result["n-byte-group"].as<uint8_t>();
   config.byte_separator = result["byte-separator"].as<std::string>();
 
   return std::make_unique<format::engine>(config);
