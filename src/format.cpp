@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
-#include <string>
 
 namespace format {
 namespace detail {

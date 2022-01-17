@@ -1,8 +1,6 @@
-#include "convert.h"
-#include "parse.h"
-
 #include <nowide/args.hpp>
-#include <nowide/iostream.hpp>
+
+#include "parse.h"
 
 int main(int argc, char *argv[]) {
 
@@ -12,18 +10,11 @@ int main(int argc, char *argv[]) {
 
   parser.do_parse(argc, argv);
 
-  if (parser.is_valid_non_help_cmd()) {
-    const auto input = parser.get_input();
-    const auto format = parser.get_format();
-    const auto output = parser.get_output();
-
-    const auto cnv = converter(*input, *format, *output);
-
-    while (cnv.proceed())
-      ;
-  }
+  auto converter = parser.get_converter();
 
   parser.print_output();
+
+  converter.run();
 
   return 0;
 }

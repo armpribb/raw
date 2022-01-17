@@ -4,7 +4,6 @@
 #include <nowide/fstream.hpp>
 #include <nowide/iostream.hpp>
 #include <stdexcept>
-#include <string>
 
 namespace input {
 namespace detail {
@@ -30,22 +29,27 @@ void read_file_as_binary(std::vector<uint8_t> &byte_vec,
   byte_vec.insert(byte_vec.begin(), std::istream_iterator<uint8_t>(inputfile),
                   std::istream_iterator<uint8_t>());
 }
-} // namespace detail
 
-std::vector<uint8_t> from_console::read() const {
-  std::vector<uint8_t> output_vec{};
+std::vector<uint8_t> string_to_byte_buffer(const std::string &str) {
+  std::vector<uint8_t> byte_buffer{};
 
-  std::string input_str{};
-
-  std::getline(nowide::cin, input_str);
-
-  if (!input_str.empty()) {
-    for (const auto &c : input_str) {
-      output_vec.push_back(static_cast<uint8_t>(c));
+  if (!str.empty()) {
+    for (const auto &c : str) {
+      byte_buffer.push_back(static_cast<uint8_t>(c));
     }
   }
 
-  return output_vec;
+  return byte_buffer;
+}
+} // namespace detail
+
+std::vector<uint8_t> from_console::read() const {
+  std::string input_str{};
+
+  nowide::cout << "> ";
+  std::getline(nowide::cin, input_str);
+
+  return detail::string_to_byte_buffer(input_str);
 };
 
 std::string from_file::get_next_filename() const {
@@ -69,4 +73,9 @@ std::vector<uint8_t> from_file::read() const {
 
   return output_vec;
 };
+
+std::vector<uint8_t> from_internal::read() const {
+  return detail::string_to_byte_buffer(line);
+}
+void from_internal::set(const char *c_str) { line = c_str; }
 } // namespace input

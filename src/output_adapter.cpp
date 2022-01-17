@@ -5,10 +5,11 @@
 namespace output {
 void to_clipboard::write(const std::string &str) const {
   impl->copy_to_clipboard(str);
+  nowide::cout << "<result copied to clipboard>\n";
 }
 
 void to_console::write(const std::string &str) const {
-  nowide::cout << str << "\n";
+  nowide::cout << "< " << str << "\n";
 }
 
 void to_file::write(const std::string &str) const { (void)str; }
