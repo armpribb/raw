@@ -17,15 +17,13 @@ public:
   void print_output();
 
 private:
-  bool is_valid_non_help_cmd() const;
   void print_help() const;
   void queue_message(const char *msg);
 
   cxxopts::Options options;
   cxxopts::ParseResult result;
 
-  bool is_help_cmd = false;
-  bool valid_result = false;
+  bool is_help_cmd = true;
   bool verbose = false;
 
   std::vector<std::string> message_queue{};

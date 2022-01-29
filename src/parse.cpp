@@ -14,10 +14,10 @@ namespace detail {
 std::unique_ptr<format::engine> get_format(const cxxopts::ParseResult &result) {
   format::config config{};
 
-  config.use_hex_prefix = result["use-hex-prefix"].as<bool>();
-  config.use_uppercase = result["use-uppercase"].as<bool>();
+  config.use_hex_prefix = result["hex-prefix"].as<bool>();
+  config.use_uppercase = result["uppercase"].as<bool>();
   config.n_byte_group = result["n-byte-group"].as<uint8_t>();
-  config.byte_separator = result["byte-separator"].as<std::string>();
+  config.byte_separator = result["group-separator"].as<std::string>();
 
   return std::make_unique<format::engine>(config);
 }
@@ -52,34 +52,39 @@ get_output(const cxxopts::ParseResult &result) {
 }
 
 std::string get_example_format(format::engine &formatter) {
-  input::from_internal tmp{};
-  tmp.set("Hello, World!");
+  const char example[] = "Hello, World!";
+
+  input::from_internal input_adapter{};
+
+  input_adapter.set(example);
+  const auto byte_vec = input_adapter.read();
+  const auto output_str = formatter.process(byte_vec);
 
   std::ostringstream oss{};
-  oss << "format: " << formatter.process(tmp.read()) << " (\"Hello, World!\")";
+  oss << "format: " << output_str << " (\"" << example << "\")";
 
   return oss.str();
 }
 } // namespace detail
 
 engine::engine()
-    : options("raw", "convert any input to hex-encoded binary output") {
+    : options("raw", "get hex-code representation of any cleartext or binary input") {
   // clang-format off
   options.add_options()
-    ("i,input", "choose input", cxxopts::value<std::string>()->default_value("console"))
-    ("o,output", "choose output", cxxopts::value<std::string>()->default_value("clipboard"))
-    ("f,file", "specify file to convert", cxxopts::value<std::vector<std::string>>())
-    ("p,use-hex-prefix", "add '0x' prefix to hex values", cxxopts::value<bool>()->default_value("false"))
-    ("u,use-uppercase", "convert hex values to uppercase", cxxopts::value<bool>()->default_value("false"))
-    ("g,n-byte-group", "group n bytes together", cxxopts::value<uint8_t>()->default_value("1"))
-    ("b,byte-separator", "choose byte separator", cxxopts::value<std::string>()->default_value(" "))
+    ("i,input", "choose input [console|file]", cxxopts::value<std::string>()->default_value("console"))
+    ("o,output", "choose output [clipboard|console|file]", cxxopts::value<std::string>()->default_value("clipboard"))
+    ("f,file", "specify file(s) to convert (multiple possible with additional flag each)", cxxopts::value<std::vector<std::string>>())
+    ("n,n-byte-group", "group n bytes together", cxxopts::value<uint8_t>()->default_value("1"))
+    ("p,hex-prefix", "add '0x' prefix to hex values", cxxopts::value<bool>()->default_value("false"))
+    ("s,group-separator", "choose byte group separator", cxxopts::value<std::string>()->default_value(" "))
+    ("u,uppercase", "use uppercase hex values", cxxopts::value<bool>()->default_value("false"))
     ("v,verbose", "verbose output", cxxopts::value<bool>()->default_value("false"))
     ("h,help", "print help", cxxopts::value<bool>()->default_value("false"));
   // clang-format on
 };
 
 convert::engine engine::get_converter() {
-  if (!is_valid_non_help_cmd()) {
+  if (is_help_cmd) {
     return {nullptr, nullptr, nullptr};
   }
 
@@ -102,17 +107,12 @@ void engine::do_parse(int argc, char **argv) {
     result = options.parse(argc, argv);
     verbose = result["verbose"].as<bool>();
     is_help_cmd = result["help"].as<bool>();
-    valid_result = true;
   } catch (const cxxopts::OptionException &e) {
     queue_message(e.what());
   }
 }
 
 void engine::print_help() const { nowide::cout << options.help() << "\n"; }
-
-bool engine::is_valid_non_help_cmd() const {
-  return (valid_result && !is_help_cmd);
-}
 
 void engine::print_output() {
   auto print = [](const std::string &msg) { nowide::cout << msg; };
@@ -121,7 +121,7 @@ void engine::print_output() {
 
   message_queue.clear();
 
-  if (!is_valid_non_help_cmd()) {
+  if (is_help_cmd) {
     print_help();
   }
 }

@@ -9,19 +9,21 @@ I came up with the idea because I often have to generate binary test data (e.g. 
 ## use
 
     $ raw -h
-    convert any input to hex-encoded binary output
+    get hex-code representation of any cleartext or binary input
     Usage:
-        raw [OPTION...]
+      raw [OPTION...]
 
-        -i, --input arg           choose input (default: console)
-        -o, --output arg          choose output (default: clipboard)
-        -f, --file arg            specify file to convert
-        -p, --use-hex-prefix      add '0x' prefix to hex values
-        -u, --use-uppercase       convert hex values to uppercase
-        -g, --n-byte-group arg    group n bytes together (default: 1)
-        -b, --byte-separator arg  choose byte separator (default:  )
-        -v, --verbose             verbose output
-        -h, --help                print help
+      -i, --input arg            choose input [console|file] (default: console)
+      -o, --output arg           choose output [clipboard|console|file]
+                                 (default: clipboard)
+      -f, --file arg             specify file(s) to convert (multiple possible
+                                 with additional flag each)
+      -n, --n-byte-group arg     group n bytes together (default: 1)
+      -p, --hex-prefix           add '0x' prefix to hex values
+      -s, --group-separator arg  choose byte group separator (default:  )
+      -u, --uppercase            use uppercase hex values
+      -v, --verbose              verbose output
+      -h, --help                 print help
 
 ## build
 
