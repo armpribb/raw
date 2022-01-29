@@ -30,7 +30,7 @@ void read_file_as_binary(std::vector<uint8_t> &byte_vec,
                   std::istream_iterator<uint8_t>());
 }
 
-std::vector<uint8_t> string_to_byte_buffer(const std::string &str) {
+std::vector<uint8_t> string_to_byte_vector(const std::string &str) {
   std::vector<uint8_t> byte_buffer{};
 
   if (!str.empty()) {
@@ -49,7 +49,7 @@ std::vector<uint8_t> from_console::read() const {
   nowide::cout << "> ";
   std::getline(nowide::cin, input_str);
 
-  return detail::string_to_byte_buffer(input_str);
+  return detail::string_to_byte_vector(input_str);
 };
 
 std::string from_file::get_next_filename() const {
@@ -75,7 +75,8 @@ std::vector<uint8_t> from_file::read() const {
 };
 
 std::vector<uint8_t> from_internal::read() const {
-  return detail::string_to_byte_buffer(line);
+  return detail::string_to_byte_vector(line);
 }
+
 void from_internal::set(const char *c_str) { line = c_str; }
 } // namespace input
