@@ -7,5 +7,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 add_executable(raw "")
 add_subdirectory(src)
-add_subdirectory(nowide)
-add_subdirectory(cxxopts)
+add_subdirectory(3rdparty)
