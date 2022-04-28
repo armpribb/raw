@@ -4,28 +4,18 @@
 #include <string>
 #include <vector>
 
-#include "convert.h"
+#include "types.h"
 
 namespace parse {
 class engine {
 public:
-  engine();
+  engine(PrintFunc _print = print_nothing);
 
-  convert::engine get_converter();
-
-  void do_parse(int argc, char **argv);
-  void print_output();
+  parse_result do_parse(int argc, char **argv);
+  std::string get_help_msg() const;
 
 private:
-  void print_help() const;
-  void queue_message(const char *msg);
-
-  cxxopts::Options options;
-  cxxopts::ParseResult result;
-
-  bool is_help_cmd = true;
-  bool verbose = false;
-
-  std::vector<std::string> message_queue{};
+  cxxopts::Options cxx_options;
+  PrintFunc print;
 };
 } // namespace parse

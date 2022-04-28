@@ -6,6 +6,7 @@ target_sources(raw
         input_adapter.cpp
         output_adapter.cpp
         parse.cpp
+        print.cpp
 )
 
 if(WIN32)
@@ -13,8 +14,6 @@ if(WIN32)
     target_sources(raw PRIVATE clipboard_impl_win.cpp)
     target_link_libraries(raw PRIVATE User32)
 else()
-    #include(FetchContent)
-    #FetchContent_GetProperties(clip)
     target_include_directories(raw PRIVATE ${clip_SOURCE_DIR})
     target_sources(raw PRIVATE clipboard_impl_unix.cpp)
     target_link_libraries(raw PRIVATE clip)

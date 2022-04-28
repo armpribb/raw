@@ -80,4 +80,9 @@ std::string engine::process(const std::vector<uint8_t> &raw_data) const {
 
   return output_string;
 }
+
+std::unique_ptr<format::engine> get_format_engine(const format_config &config) {
+  return std::make_unique<format::engine>(config);
+}
+
 } // namespace format
