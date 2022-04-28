@@ -4,6 +4,7 @@
 #include <string>
 
 #include "clipboard_impl.h"
+#include "types.h"
 
 namespace output {
 class interface {
@@ -37,6 +38,9 @@ public:
 
 class invalid : public interface {
   const char *info() const override { return "output: invalid"; }
-  void write(const std::string &str) const override { (void)str; };
+  void write(const std::string &) const override {}
 };
+
+std::unique_ptr<output::interface> get_output_adapter(output_type type);
+
 } // namespace output

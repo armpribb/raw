@@ -1,8 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "types.h"
 
 namespace input {
 class interface {
@@ -44,6 +47,10 @@ private:
 class invalid : public interface {
 public:
   const char *info() const override { return "input: invalid"; }
-  std::vector<uint8_t> read() const override { return {}; };
+  std::vector<uint8_t> read() const override { return {}; }
 };
+
+std::unique_ptr<input::interface>
+get_input_adapter(input_type type, const std::vector<std::string> &files = {});
+
 } // namespace input

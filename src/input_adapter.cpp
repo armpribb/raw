@@ -1,6 +1,7 @@
 #include "input_adapter.h"
 
 #include <iterator>
+#include <memory>
 #include <nowide/fstream.hpp>
 #include <nowide/iostream.hpp>
 #include <stdexcept>
@@ -79,4 +80,17 @@ std::vector<uint8_t> from_internal::read() const {
 }
 
 void from_internal::set(const char *c_str) { line = c_str; }
+
+std::unique_ptr<input::interface>
+get_input_adapter(input_type type, const std::vector<std::string> &files) {
+  switch (type) {
+  case input_type::console:
+    return std::make_unique<input::from_console>();
+  case input_type::file:
+    return std::make_unique<input::from_file>(files);
+  default:
+    return std::make_unique<input::invalid>();
+  }
+}
+
 } // namespace input
