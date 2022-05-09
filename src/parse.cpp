@@ -1,5 +1,7 @@
 #include "parse.h"
 
+#include <cxxopts.hpp>
+
 namespace parse {
 namespace detail {
 format_config get_format(const cxxopts::ParseResult &result) {
@@ -39,6 +41,18 @@ output_type get_output(const cxxopts::ParseResult &result) {
   }
 }
 } // namespace detail
+
+class engine : public interface {
+public:
+  engine(print_func _print = no_print);
+
+  parse_result do_parse(int argc, char **argv) override;
+
+private:
+  std::string get_help_msg() const;
+  cxxopts::Options cxx_options;
+  print_func print;
+};
 
 engine::engine(print_func _print)
     : cxx_options(
@@ -93,4 +107,9 @@ parse_result engine::do_parse(int argc, char **argv) {
 }
 
 std::string engine::get_help_msg() const { return cxx_options.help(); }
+
+std::unique_ptr<parse::interface> get_parser(print_func _print) {
+  return std::make_unique<parse::engine>(_print);
+}
+
 } // namespace parse

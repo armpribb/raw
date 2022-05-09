@@ -11,7 +11,7 @@ using get_string_vector_func = std::function<std::vector<std::string>(void)>;
 inline void no_print(const std::string &) {}
 inline std::vector<std::string> no_string_vec() { return {}; }
 
-enum class input_type : uint8_t { invalid = 0, console, file };
+enum class input_type : uint8_t { invalid = 0, console, file, internal };
 
 enum class output_type : uint8_t { invalid = 0, clipboard, console, file };
 

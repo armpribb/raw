@@ -3,19 +3,43 @@
 #include <memory>
 #include <nowide/iostream.hpp>
 
+#include "clipboard_impl.h"
+
 namespace output {
-void to_clipboard::write(const std::string &str) const {
-  impl->copy_to_clipboard(str);
-  nowide::cout << "<result copied to clipboard>\n";
-}
 
-void to_console::write(const std::string &str) const {
-  nowide::cout << "< " << str << "\n";
-}
+class to_clipboard : public interface {
+public:
+  to_clipboard() : impl(std::make_unique<clipboard_impl>()){};
+  const char *info() const override { return "output: clipboard"; }
+  void write(const std::string &str) const override {
+    impl->copy_to_clipboard(str);
+    nowide::cout << "<result copied to clipboard>\n";
+  }
 
-void to_file::write(const std::string &str) const {
-  nowide::cout << "<not implemented yet>\n";
-}
+private:
+  std::unique_ptr<clipboard_impl> impl;
+};
+
+class to_console : public interface {
+public:
+  const char *info() const override { return "output: console"; }
+  void write(const std::string &str) const override {
+    nowide::cout << "< " << str << "\n";
+  }
+};
+
+class to_file : public interface {
+public:
+  const char *info() const override { return "output: file"; }
+  void write(const std::string &str) const override {
+    nowide::cout << "<not implemented yet>\n";
+  }
+};
+
+class invalid : public interface {
+  const char *info() const override { return "output: invalid"; }
+  void write(const std::string &) const override {}
+};
 
 std::unique_ptr<output::interface> get_output_adapter(output_type type) {
   switch (type) {
@@ -29,4 +53,5 @@ std::unique_ptr<output::interface> get_output_adapter(output_type type) {
     return std::make_unique<output::invalid>();
   }
 }
+
 } // namespace output

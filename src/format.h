@@ -7,18 +7,14 @@
 #include "types.h"
 
 namespace format {
-class engine {
+
+class interface {
 public:
-  engine() = default;
-  engine(const format_config &cnf) : config(cnf){};
-  ~engine() = default;
-
-  std::string process(const std::vector<uint8_t> &raw_data) const;
-
-private:
-  format_config config{};
+  virtual ~interface() = default;
+  virtual std::string process(const std::vector<uint8_t> &raw_data) const = 0;
 };
 
-std::unique_ptr<format::engine> get_format_engine(const format_config &config);
+std::unique_ptr<format::interface>
+get_format_engine(const format_config &config = {});
 
 } // namespace format
