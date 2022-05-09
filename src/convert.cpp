@@ -20,7 +20,7 @@ std::string get_example_format(format::engine &formatter) {
 }
 } // namespace detail
 
-engine::engine(const parse_result &config, PrintFunc _print)
+engine::engine(const parse_result &config, print_func _print)
     : formatter(format::get_format_engine(config.format)),
       input_adapter(input::get_input_adapter(config.input, config.filenames())),
       output_adapter(output::get_output_adapter(config.output)), print(_print) {

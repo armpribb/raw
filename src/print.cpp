@@ -5,11 +5,11 @@
 
 namespace print {
 
-PrintFunc engine::get_print_func() const {
+print_func engine::get_print_func() const {
   return [](const std::string &msg) { nowide::cout << msg << "\n"; };
 }
 
-PrintFunc engine::get_queue_func() {
+print_func engine::get_queue_func() {
   return [this](const std::string &msg) { message_queue.emplace_back(msg); };
 }
 

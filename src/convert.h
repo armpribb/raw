@@ -10,7 +10,7 @@
 namespace convert {
 class engine {
 public:
-  engine(const parse_result &config, PrintFunc _print = print_nothing);
+  engine(const parse_result &config, print_func _print = no_print);
 
   void run() const;
 
@@ -22,6 +22,6 @@ private:
   std::unique_ptr<input::interface> input_adapter;
   std::unique_ptr<output::interface> output_adapter;
 
-  PrintFunc print;
+  print_func print;
 };
 } // namespace convert
