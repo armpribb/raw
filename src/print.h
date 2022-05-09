@@ -5,8 +5,8 @@
 namespace print {
 class engine {
 public:
-  PrintFunc get_print_func() const;
-  PrintFunc get_queue_func();
+  print_func get_print_func() const;
+  print_func get_queue_func();
   void print_queued();
 
 private:

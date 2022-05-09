@@ -40,7 +40,7 @@ output_type get_output(const cxxopts::ParseResult &result) {
 }
 } // namespace detail
 
-engine::engine(PrintFunc _print)
+engine::engine(print_func _print)
     : cxx_options(
           "raw",
           "get hex-code representation of any cleartext or binary input"),
