@@ -5,6 +5,7 @@
 #include <nowide/fstream.hpp>
 #include <nowide/iostream.hpp>
 #include <stdexcept>
+#include <typeinfo>
 
 namespace input {
 namespace detail {
@@ -44,42 +45,67 @@ std::vector<uint8_t> string_to_byte_vector(const std::string &str) {
 }
 } // namespace detail
 
-std::vector<uint8_t> from_console::read() const {
-  std::string input_str{};
+class from_console : public interface {
+public:
+  const char *info() const override { return "input: console"; }
+  std::vector<uint8_t> read() const override {
+    std::string input_str{};
 
-  nowide::cout << "> ";
-  std::getline(nowide::cin, input_str);
+    nowide::cout << "> ";
+    std::getline(nowide::cin, input_str);
 
-  return detail::string_to_byte_vector(input_str);
+    return detail::string_to_byte_vector(input_str);
+  }
 };
 
-std::string from_file::get_next_filename() const {
-  try {
-    const auto &next = filenames.at(index);
-    ++index;
-    return next;
-  } catch (std::out_of_range &) {
+class from_file : public interface {
+public:
+  from_file(const std::vector<std::string> &names) : filenames(names){};
+  const char *info() const override { return "input: file"; }
+  std::vector<uint8_t> read() const override {
+    std::vector<uint8_t> output_vec{};
+
+    const auto filename = get_next_filename();
+    if (!filename.empty()) {
+      detail::read_file_as_binary(output_vec, filename);
+    }
+
+    return output_vec;
   }
 
-  return {};
-}
+private:
+  std::string get_next_filename() const {
+    try {
+      const auto &next = filenames.at(index);
+      ++index;
+      return next;
+    } catch (std::out_of_range &) {
+    }
 
-std::vector<uint8_t> from_file::read() const {
-  std::vector<uint8_t> output_vec{};
-
-  const auto filename = get_next_filename();
-  if (!filename.empty()) {
-    detail::read_file_as_binary(output_vec, filename);
+    return {};
   }
 
-  return output_vec;
+  std::vector<std::string> filenames;
+  mutable size_t index = 0;
 };
 
-std::vector<uint8_t> from_internal::read() const {
-  return detail::string_to_byte_vector(line);
-}
+class from_internal : public interface {
+public:
+  const char *info() const override { return "input: internal"; };
+  std::vector<uint8_t> read() const override {
+    return detail::string_to_byte_vector(line);
+  }
+  void set(const char *c_str) { line = c_str; }
 
-void from_internal::set(const char *c_str) { line = c_str; }
+private:
+  std::string line{};
+};
+
+class invalid : public interface {
+public:
+  const char *info() const override { return "input: invalid"; }
+  std::vector<uint8_t> read() const override { return {}; }
+};
 
 std::unique_ptr<input::interface>
 get_input_adapter(input_type type, const std::vector<std::string> &files) {
@@ -88,9 +114,21 @@ get_input_adapter(input_type type, const std::vector<std::string> &files) {
     return std::make_unique<input::from_console>();
   case input_type::file:
     return std::make_unique<input::from_file>(files);
+  case input_type::internal:
+    return std::make_unique<input::from_internal>();
   default:
     return std::make_unique<input::invalid>();
   }
+}
+
+bool _internal_set(input::interface &instance, const char *c_str) {
+  try {
+    auto &internal = dynamic_cast<input::from_internal &>(instance);
+    internal.set(c_str);
+  } catch (std::bad_cast &) {
+    return false;
+  }
+  return true;
 }
 
 } // namespace input

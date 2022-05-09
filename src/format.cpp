@@ -66,6 +66,18 @@ std::string combine_to_string(const std::vector<std::string> &hex_strings,
 }
 } // namespace detail
 
+class engine : public interface {
+public:
+  engine() = default;
+  engine(const format_config &cnf) : config(cnf){};
+  ~engine() = default;
+
+  std::string process(const std::vector<uint8_t> &raw_data) const override;
+
+private:
+  format_config config{};
+};
+
 std::string engine::process(const std::vector<uint8_t> &raw_data) const {
   std::vector<std::string> hex_strings{};
 
@@ -81,7 +93,8 @@ std::string engine::process(const std::vector<uint8_t> &raw_data) const {
   return output_string;
 }
 
-std::unique_ptr<format::engine> get_format_engine(const format_config &config) {
+std::unique_ptr<format::interface>
+get_format_engine(const format_config &config) {
   return std::make_unique<format::engine>(config);
 }
 

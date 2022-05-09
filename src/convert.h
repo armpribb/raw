@@ -2,26 +2,17 @@
 
 #include <memory>
 
-#include "format.h"
-#include "input_adapter.h"
-#include "output_adapter.h"
 #include "types.h"
 
 namespace convert {
-class engine {
+
+class interface {
 public:
-  engine(const parse_result &config, print_func _print = no_print);
-
-  void run() const;
-
-private:
-  bool is_invalid() const;
-  bool proceed() const;
-
-  std::unique_ptr<format::engine> formatter;
-  std::unique_ptr<input::interface> input_adapter;
-  std::unique_ptr<output::interface> output_adapter;
-
-  print_func print;
+  virtual ~interface() = default;
+  virtual void run() const = 0;
 };
+
+std::unique_ptr<convert::interface> get_converter(const parse_result &config,
+                                                  print_func _print = no_print);
+
 } // namespace convert
