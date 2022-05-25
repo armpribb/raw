@@ -1,8 +1,10 @@
 #include "parse.h"
 
 #include <cxxopts.hpp>
+#include <nowide/args.hpp>
 
 namespace parse {
+
 namespace detail {
 format_config get_format(const cxxopts::ParseResult &result) {
   format_config config{};
@@ -22,6 +24,8 @@ input_type get_input(const cxxopts::ParseResult &result) {
     return input_type::console;
   } else if (value == "file") {
     return input_type::file;
+  } else if (value == "string") {
+    return input_type::string;
   } else {
     return input_type::invalid;
   }
@@ -44,26 +48,25 @@ output_type get_output(const cxxopts::ParseResult &result) {
 
 class engine : public interface {
 public:
-  engine(print_func _print = no_print);
+  engine(queue_func _queue);
 
   parse_result do_parse(int argc, char **argv) override;
 
 private:
-  std::string get_help_msg() const;
   cxxopts::Options cxx_options;
-  print_func print;
+  queue_func queue;
 };
 
-engine::engine(print_func _print)
+engine::engine(queue_func _queue)
     : cxx_options(
           "raw",
           "get hex-code representation of any cleartext or binary input"),
-      print(_print) {
+      queue(_queue) {
   // clang-format off
   cxx_options.add_options()
-    ("i,input", "choose input [console|file]", cxxopts::value<std::string>()->default_value("console"))
+    ("i,input", "choose input [console|file|string]", cxxopts::value<std::string>()->default_value("console"))
     ("o,output", "choose output [clipboard|console|file]", cxxopts::value<std::string>()->default_value("clipboard"))
-    ("f,file", "specify file(s) to convert (multiple possible with additional flag each)", cxxopts::value<std::vector<std::string>>()->default_value(""))
+    ("a,args", "specify text string(s) or file(s) to convert, depending on input mode", cxxopts::value<std::vector<std::string>>()->default_value(""))
     ("n,n-byte-group", "group n bytes together", cxxopts::value<uint8_t>()->default_value("1"))
     ("p,hex-prefix", "add '0x' prefix to hex values", cxxopts::value<bool>()->default_value("false"))
     ("s,group-separator", "choose byte group separator", cxxopts::value<std::string>()->default_value(" "))
@@ -74,13 +77,15 @@ engine::engine(print_func _print)
 };
 
 parse_result engine::do_parse(int argc, char **argv) {
+  nowide::args _(argc, argv);
+
   cxxopts::ParseResult cxx_result{};
 
   try {
     cxx_result = cxx_options.parse(argc, argv);
   } catch (const cxxopts::OptionException &e) {
-    print(e.what());
-    print(get_help_msg());
+    queue(e.what());
+    queue(cxx_options.help());
     return {.is_help_cmd = true};
   }
 
@@ -89,7 +94,7 @@ parse_result engine::do_parse(int argc, char **argv) {
   result.is_help_cmd = cxx_result["help"].as<bool>();
 
   if (result.is_help_cmd) {
-    print(get_help_msg());
+    queue(cxx_options.help());
     return result;
   }
 
@@ -98,18 +103,16 @@ parse_result engine::do_parse(int argc, char **argv) {
   result.output = detail::get_output(cxx_result);
   result.verbose = cxx_result["verbose"].as<bool>();
 
-  result.filenames = [files =
-                          cxx_result["file"].as<std::vector<std::string>>()]() {
-    return files;
-  };
+  result.str_input_args =
+      [files = cxx_result["args"].as<std::vector<std::string>>()]() {
+        return files;
+      };
 
   return result;
 }
 
-std::string engine::get_help_msg() const { return cxx_options.help(); }
-
-std::unique_ptr<parse::interface> get_parser(print_func _print) {
-  return std::make_unique<parse::engine>(_print);
+std::unique_ptr<parse::interface> get_parser(queue_func _queue) {
+  return std::make_unique<parse::engine>(_queue);
 }
 
 } // namespace parse

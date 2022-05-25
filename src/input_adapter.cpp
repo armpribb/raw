@@ -8,6 +8,7 @@
 #include <typeinfo>
 
 namespace input {
+
 namespace detail {
 void read_file_as_binary(std::vector<uint8_t> &byte_vec,
                          const std::string &filename) {
@@ -89,9 +90,40 @@ private:
   mutable size_t index = 0;
 };
 
+class from_string : public interface {
+public:
+  from_string(const std::vector<std::string> &_input) : input(_input) {}
+  const char *info() const override { return "input: text"; }
+  std::vector<uint8_t> read() const override {
+    std::vector<uint8_t> output_vec{};
+
+    const auto str = get_next_string();
+    if (!str.empty()) {
+      output_vec = detail::string_to_byte_vector(str);
+    }
+
+    return output_vec;
+  }
+
+private:
+  std::string get_next_string() const {
+    try {
+      const auto &next = input.at(index);
+      ++index;
+      return next;
+    } catch (std::out_of_range &) {
+    }
+
+    return {};
+  }
+
+  std::vector<std::string> input;
+  mutable size_t index = 0;
+};
+
 class from_internal : public interface {
 public:
-  const char *info() const override { return "input: internal"; };
+  const char *info() const override { return "input: internal"; }
   std::vector<uint8_t> read() const override {
     return detail::string_to_byte_vector(line);
   }
@@ -108,12 +140,14 @@ public:
 };
 
 std::unique_ptr<input::interface>
-get_input_adapter(input_type type, const std::vector<std::string> &files) {
+get_input_adapter(input_type type, const std::vector<std::string> &input) {
   switch (type) {
   case input_type::console:
     return std::make_unique<input::from_console>();
   case input_type::file:
-    return std::make_unique<input::from_file>(files);
+    return std::make_unique<input::from_file>(input);
+  case input_type::string:
+    return std::make_unique<input::from_string>(input);
   case input_type::internal:
     return std::make_unique<input::from_internal>();
   default:

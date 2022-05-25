@@ -4,9 +4,9 @@ target_sources(raw
         convert.cpp
         format.cpp
         input_adapter.cpp
+        log.cpp
         output_adapter.cpp
         parse.cpp
-        print.cpp
 )
 
 if(WIN32)

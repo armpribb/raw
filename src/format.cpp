@@ -5,6 +5,7 @@
 #include <sstream>
 
 namespace format {
+
 namespace detail {
 
 constexpr uint8_t to_upper_offset = 32;
@@ -64,13 +65,13 @@ std::string combine_to_string(const std::vector<std::string> &hex_strings,
 
   return oss.str();
 }
+
 } // namespace detail
 
 class engine : public interface {
 public:
   engine() = default;
   engine(const format_config &cnf) : config(cnf){};
-  ~engine() = default;
 
   std::string process(const std::vector<uint8_t> &raw_data) const override;
 

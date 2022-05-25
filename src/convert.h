@@ -13,6 +13,6 @@ public:
 };
 
 std::unique_ptr<convert::interface> get_converter(const parse_result &config,
-                                                  print_func _print = no_print);
+                                                  queue_func _print = none);
 
 } // namespace convert

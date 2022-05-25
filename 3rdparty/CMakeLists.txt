@@ -12,7 +12,6 @@ FetchContent_Declare(
     GIT_TAG 02f40f0b5f5686627fcddae93ff88ca399db4766 # standalone
 )
 
-
 FetchContent_MakeAvailable(cxxopts nowide)
 
 if(UNIX)
