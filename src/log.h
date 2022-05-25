@@ -2,14 +2,12 @@
 
 #include "types.h"
 
-namespace print {
-class engine {
+class logger {
 public:
-  print_func get_print_func() const;
-  print_func get_queue_func();
+  print_func print() const;
+  queue_func queue();
   void print_queued();
 
 private:
   std::vector<std::string> message_queue{};
 };
-} // namespace print

@@ -12,6 +12,6 @@ public:
   virtual parse_result do_parse(int argc, char **argv) = 0;
 };
 
-std::unique_ptr<parse::interface> get_parser(print_func _print = no_print);
+std::unique_ptr<parse::interface> get_parser(queue_func _queue = none);
 
 } // namespace parse

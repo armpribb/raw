@@ -17,7 +17,7 @@ public:
 };
 
 std::unique_ptr<input::interface>
-get_input_adapter(input_type type, const std::vector<std::string> &files = {});
+get_input_adapter(input_type type, const std::vector<std::string> &input = {});
 
 bool _internal_set(input::interface &instance, const char *c_str);
 
