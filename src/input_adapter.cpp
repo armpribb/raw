@@ -5,6 +5,7 @@
 #include <nowide/fstream.hpp>
 #include <nowide/iostream.hpp>
 #include <stdexcept>
+#include <utility>
 
 namespace input {
 
@@ -41,6 +42,7 @@ std::vector<uint8_t> string_to_byte_vector(const std::string &str) {
 class from_console : public interface {
 public:
   const char *info() const override { return "input: console"; }
+
   std::vector<uint8_t> read() const override {
     std::string input_str{};
 
@@ -53,8 +55,8 @@ public:
 
 class from_file : public interface {
 public:
-  from_file(const std::vector<std::string> &names)
-      : filenames(names), iter(filenames.begin()) {}
+  from_file(std::vector<std::string> names)
+      : filenames(std::move(names)), iter(filenames.begin()) {}
 
   const char *info() const override { return "input: file"; }
 
@@ -76,8 +78,8 @@ private:
 
 class from_string : public interface {
 public:
-  from_string(const std::vector<std::string> &_input)
-      : input(_input), iter(input.begin()) {}
+  from_string(std::vector<std::string> _input)
+      : input(std::move(_input)), iter(input.begin()) {}
 
   const char *info() const override { return "input: text"; }
 
@@ -100,9 +102,11 @@ private:
 class from_internal : public interface {
 public:
   const char *info() const override { return "input: internal"; }
+
   std::vector<uint8_t> read() const override {
     return detail::string_to_byte_vector(line);
   }
+
   void set(const char *c_str) { line = c_str; }
 
 private:
@@ -112,6 +116,7 @@ private:
 class invalid : public interface {
 public:
   const char *info() const override { return "input: invalid"; }
+
   std::vector<uint8_t> read() const override { return {}; }
 };
 

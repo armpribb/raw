@@ -2,6 +2,7 @@
 
 #include <cxxopts.hpp>
 #include <nowide/args.hpp>
+#include <utility>
 
 namespace parse {
 
@@ -61,7 +62,7 @@ engine::engine(queue_func _queue)
     : cxx_options(
           "raw",
           "get hex-code representation of any cleartext or binary input"),
-      queue(_queue) {
+      queue(std::move(_queue)) {
   // clang-format off
   cxx_options.add_options()
     ("i,input", "choose input [console|file|string]", cxxopts::value<std::string>()->default_value("console"))

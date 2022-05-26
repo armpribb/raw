@@ -10,7 +10,9 @@ namespace output {
 class to_clipboard : public interface {
 public:
   to_clipboard() : impl(std::make_unique<clipboard_impl>()){};
+
   const char *info() const override { return "output: clipboard"; }
+
   void write(const std::string &str) const override {
     impl->copy_to_clipboard(str);
     nowide::cout << "<result copied to clipboard>\n";
@@ -23,6 +25,7 @@ private:
 class to_console : public interface {
 public:
   const char *info() const override { return "output: console"; }
+
   void write(const std::string &str) const override {
     nowide::cout << "< " << str << "\n";
   }
@@ -31,6 +34,7 @@ public:
 class to_file : public interface {
 public:
   const char *info() const override { return "output: file"; }
+
   void write(const std::string &str) const override {
     nowide::cout << "<not implemented yet>\n";
   }
@@ -38,6 +42,7 @@ public:
 
 class invalid : public interface {
   const char *info() const override { return "output: invalid"; }
+  
   void write(const std::string &) const override {}
 };
 
