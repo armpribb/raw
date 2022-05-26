@@ -11,9 +11,16 @@ namespace input {
 
 class interface {
 public:
+  interface() = default;
   virtual ~interface() = default;
   virtual const char *info() const = 0;
   virtual std::vector<uint8_t> read() const = 0;
+
+protected:
+  interface(const interface &) = default;
+  interface(interface &&) = default;
+  interface &operator=(const interface &) = default;
+  interface &operator=(interface &&) = default;
 };
 
 std::unique_ptr<input::interface>

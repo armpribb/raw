@@ -1,6 +1,8 @@
 #include "convert.h"
 
+#include <array>
 #include <sstream>
+#include <utility>
 
 #include "format.h"
 #include "input_adapter.h"
@@ -9,17 +11,23 @@
 namespace convert {
 
 namespace detail {
-std::string get_example_format(format::interface &formatter) {
-  const char example[] = "Hello, World!";
+constexpr std::array<char, 14> example{{"Hello, World!"}};
 
+template <size_t Size>
+std::string array_to_string(const std::array<char, Size> &char_array) {
+  return {char_array.begin(), char_array.end()};
+}
+
+std::string get_example_format(format::interface &formatter) {
   const auto input_adapter = input::get_input_adapter(input_type::internal);
 
-  (void)input::_internal_set(*input_adapter, example);
+  (void)input::_internal_set(*input_adapter, example.data());
   const auto byte_vec = input_adapter->read();
   const auto output_str = formatter.process(byte_vec);
 
   std::ostringstream oss{};
-  oss << "format: " << output_str << " (\"" << example << "\")";
+  oss << "format: " << output_str << " (\"" << array_to_string(example)
+      << "\")";
 
   return oss.str();
 }
@@ -45,7 +53,8 @@ engine::engine(const parse_result &config, queue_func _queue)
     : formatter(format::get_format_engine(config.format)),
       input_adapter(
           input::get_input_adapter(config.input, config.str_input_args())),
-      output_adapter(output::get_output_adapter(config.output)), queue(_queue) {
+      output_adapter(output::get_output_adapter(config.output)),
+      queue(std::move(_queue)) {
 
   if (config.verbose) {
     const auto example = detail::get_example_format(*formatter);

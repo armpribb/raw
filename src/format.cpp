@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 namespace format {
 
@@ -10,9 +11,8 @@ namespace detail {
 
 constexpr uint8_t to_upper_offset = 32;
 
-void convert_to_hex(std::vector<std::string> &hex_strings,
-                    const std::vector<uint8_t> &raw_data,
-                    const uint8_t n_byte_group) {
+std::vector<std::string> convert_to_hex(const std::vector<uint8_t> &raw_data,
+                                        const uint8_t n_byte_group) {
   std::vector<uint8_t> copy{};
 
   if (n_byte_group > 0 && raw_data.size() % n_byte_group) {
@@ -26,6 +26,8 @@ void convert_to_hex(std::vector<std::string> &hex_strings,
     copy = raw_data;
   }
 
+  std::vector<std::string> hex_strings{};
+
   for (auto it = copy.cbegin(); it != copy.cend();) {
     std::ostringstream oss{};
     auto n = n_byte_group ? n_byte_group : copy.size();
@@ -34,6 +36,8 @@ void convert_to_hex(std::vector<std::string> &hex_strings,
     }
     hex_strings.emplace_back(oss.str());
   }
+
+  return hex_strings;
 }
 
 void convert_to_uppercase(std::vector<std::string> &hex_strings) {
@@ -71,7 +75,7 @@ std::string combine_to_string(const std::vector<std::string> &hex_strings,
 class engine : public interface {
 public:
   engine() = default;
-  engine(const format_config &cnf) : config(cnf){};
+  engine(format_config cnf) : config(std::move(cnf)){};
 
   std::string process(const std::vector<uint8_t> &raw_data) const override;
 
@@ -80,9 +84,7 @@ private:
 };
 
 std::string engine::process(const std::vector<uint8_t> &raw_data) const {
-  std::vector<std::string> hex_strings{};
-
-  detail::convert_to_hex(hex_strings, raw_data, config.n_byte_group);
+  auto hex_strings = detail::convert_to_hex(raw_data, config.n_byte_group);
 
   if (config.use_uppercase) {
     detail::convert_to_uppercase(hex_strings);
