@@ -5,44 +5,36 @@
 #include <nowide/fstream.hpp>
 #include <nowide/iostream.hpp>
 #include <stdexcept>
-#include <typeinfo>
 
 namespace input {
 
 namespace detail {
-void read_file_as_binary(std::vector<uint8_t> &byte_vec,
-                         const std::string &filename) {
+std::vector<uint8_t> read_file_as_binary(const std::string &filename) {
   nowide::ifstream inputfile(filename, std::ios::binary);
 
   if (!inputfile.is_open()) {
     nowide::cerr << "Failed to open '" << filename << "'\n";
-    return;
+    return {};
   }
 
   inputfile.unsetf(std::ios_base::skipws);
 
-  std::streampos inputfile_size;
+  std::vector<uint8_t> byte_vec{std::istream_iterator<uint8_t>(inputfile),
+                                std::istream_iterator<uint8_t>()};
 
-  inputfile.seekg(0, std::ios::end);
-  inputfile_size = inputfile.tellg();
-  inputfile.seekg(0, std::ios::beg);
-
-  byte_vec.reserve(inputfile_size);
-
-  byte_vec.insert(byte_vec.begin(), std::istream_iterator<uint8_t>(inputfile),
-                  std::istream_iterator<uint8_t>());
+  return byte_vec;
 }
 
 std::vector<uint8_t> string_to_byte_vector(const std::string &str) {
-  std::vector<uint8_t> byte_buffer{};
+  std::vector<uint8_t> byte_vec{};
 
   if (!str.empty()) {
     for (const auto &c : str) {
-      byte_buffer.push_back(static_cast<uint8_t>(c));
+      byte_vec.push_back(static_cast<uint8_t>(c));
     }
   }
 
-  return byte_buffer;
+  return byte_vec;
 }
 } // namespace detail
 
@@ -61,64 +53,48 @@ public:
 
 class from_file : public interface {
 public:
-  from_file(const std::vector<std::string> &names) : filenames(names){};
-  const char *info() const override { return "input: file"; }
-  std::vector<uint8_t> read() const override {
-    std::vector<uint8_t> output_vec{};
+  from_file(const std::vector<std::string> &names)
+      : filenames(names), iter(filenames.begin()) {}
 
-    const auto filename = get_next_filename();
-    if (!filename.empty()) {
-      detail::read_file_as_binary(output_vec, filename);
+  const char *info() const override { return "input: file"; }
+
+  std::vector<uint8_t> read() const override {
+    if (iter == filenames.end()) {
+      return {};
+    } else if (iter != filenames.begin()) {
+      nowide::cout << "(hit enter to continue)";
+      nowide::cin.get();
     }
 
-    return output_vec;
+    return detail::read_file_as_binary(*iter++);
   }
 
 private:
-  std::string get_next_filename() const {
-    try {
-      const auto &next = filenames.at(index);
-      ++index;
-      return next;
-    } catch (std::out_of_range &) {
-    }
-
-    return {};
-  }
-
-  std::vector<std::string> filenames;
-  mutable size_t index = 0;
+  const std::vector<std::string> filenames;
+  mutable std::vector<std::string>::const_iterator iter;
 };
 
 class from_string : public interface {
 public:
-  from_string(const std::vector<std::string> &_input) : input(_input) {}
-  const char *info() const override { return "input: text"; }
-  std::vector<uint8_t> read() const override {
-    std::vector<uint8_t> output_vec{};
+  from_string(const std::vector<std::string> &_input)
+      : input(_input), iter(input.begin()) {}
 
-    const auto str = get_next_string();
-    if (!str.empty()) {
-      output_vec = detail::string_to_byte_vector(str);
+  const char *info() const override { return "input: text"; }
+
+  std::vector<uint8_t> read() const override {
+    if (iter == input.end()) {
+      return {};
+    } else if (iter != input.begin()) {
+      nowide::cout << "(hit enter to continue)";
+      nowide::cin.get();
     }
 
-    return output_vec;
+    return detail::string_to_byte_vector(*iter++);
   }
 
 private:
-  std::string get_next_string() const {
-    try {
-      const auto &next = input.at(index);
-      ++index;
-      return next;
-    } catch (std::out_of_range &) {
-    }
-
-    return {};
-  }
-
-  std::vector<std::string> input;
-  mutable size_t index = 0;
+  const std::vector<std::string> input;
+  mutable std::vector<std::string>::const_iterator iter;
 };
 
 class from_internal : public interface {
