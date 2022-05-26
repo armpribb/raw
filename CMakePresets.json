@@ -1,0 +1,179 @@
+{
+    "version": 2,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "release",
+            "displayName": "Default Release Config",
+            "description": "Release build using Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Default Debug Config",
+            "description": "Debug build using Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true
+            }
+        },
+        {
+            "name": "win-x64-vscode",
+            "displayName": "Windows x64 (vscode)",
+            "description": "Windows x64 Visual Studio Code",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/win-x64-vscode",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true
+            },
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "mac-x64",
+            "displayName": "macOS x64 (clang) Release",
+            "description": "macOS x64 Release using Clang and Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/mac-x64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-macos-amd64-clang.cmake"
+            }
+        },
+        {
+            "name": "lin-x64",
+            "displayName": "Linux x64 (gcc) Release",
+            "description": "Linux x64 Release using gcc and Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/lin-x64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-linux-amd64-gcc.cmake"
+            }
+        },
+        {
+            "name": "lin-x86",
+            "displayName": "Linux x86 (gcc) Release",
+            "description": "Linux x86 using gcc and Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/lin-x86",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-linux-i386-gcc.cmake"
+            }
+        },
+        {
+            "name": "lin-x64-clang",
+            "displayName": "Linux x64 (clang) Release",
+            "description": "Linux x64 Release using clang and Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/lin-x64-clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-linux-amd64-clang.cmake"
+            }
+        },
+        {
+            "name": "lin-x86-clang",
+            "displayName": "Linux x86 (clang) Release",
+            "description": "Linux x86 using clang and Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/lin-x86-clang",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-linux-i386-clang.cmake"
+            }
+        } 
+    ],
+    "buildPresets": [
+        {
+            "name": "win-x64-vscode",
+            "configurePreset": "win-x64-vscode"
+        },
+        {
+            "name": "mac-x64",
+            "configurePreset": "mac-x64"
+        },
+        {
+            "name": "lin-x64",
+            "configurePreset": "lin-x64"
+        },
+        {
+            "name": "lin-x86",
+            "configurePreset": "lin-x86"
+        },
+        {
+            "name": "lin-x64-clang",
+            "configurePreset": "lin-x64-clang"
+        },
+        {
+            "name": "lin-x86-clang",
+            "configurePreset": "lin-x86-clang"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "win-x64-vscode",
+            "configurePreset": "win-x64-vscode"
+        },
+        {
+            "name": "mac-x64",
+            "configurePreset": "mac-x64"
+        },
+        {
+            "name": "lin-x64",
+            "configurePreset": "lin-x64"
+        },
+        {
+            "name": "lin-x86",
+            "configurePreset": "lin-x86"
+        },
+        {
+            "name": "lin-x64-clang",
+            "configurePreset": "lin-x64-clang"
+        },
+        {
+            "name": "lin-x86-clang",
+            "configurePreset": "lin-x86-clang"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        }
+    ]
+}

@@ -104,9 +104,9 @@ parse_result engine::do_parse(int argc, char **argv) {
   result.output = detail::get_output(cxx_result);
   result.verbose = cxx_result["verbose"].as<bool>();
 
-  result.str_input_args =
-      [files = cxx_result["args"].as<std::vector<std::string>>()]() {
-        return files;
+  result.input_args =
+      [args = cxx_result["args"].as<std::vector<std::string>>()]() {
+        return args;
       };
 
   return result;
