@@ -14,7 +14,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(cxxopts nowide)
 
-if(UNIX)
+custom_target_sanitize_options(nowide)
+custom_target_debug_options(nowide)
+
+if(LIN OR MAC)
     FetchContent_Declare(
         clip
         GIT_REPOSITORY https://github.com/dacap/clip.git
@@ -25,4 +28,8 @@ if(UNIX)
     set(CLIP_TESTS OFF CACHE BOOL "Compile clip tests")
     set(CLIP_X11_WITH_PNG OFF CACHE BOOL "Compile clip X11 with PNG")
     FetchContent_MakeAvailable(clip)
+
+    custom_target_sanitize_options(clip)
+    custom_target_debug_options(clip)
 endif()
+

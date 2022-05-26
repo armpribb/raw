@@ -52,7 +52,7 @@ private:
 engine::engine(const parse_result &config, queue_func _queue)
     : formatter(format::get_format_engine(config.format)),
       input_adapter(
-          input::get_input_adapter(config.input, config.str_input_args())),
+          input::get_input_adapter(config.input, config.input_args())),
       output_adapter(output::get_output_adapter(config.output)),
       queue(std::move(_queue)) {
 

@@ -1,3 +1,5 @@
+add_executable(raw "")
+
 target_sources(raw
     PRIVATE
         main.cpp
@@ -9,7 +11,7 @@ target_sources(raw
         parse.cpp
 )
 
-if(WIN32)
+if(WIN)
     target_compile_definitions(raw PRIVATE UNICODE)
     target_sources(raw PRIVATE clipboard_impl_win.cpp)
     target_link_libraries(raw PRIVATE User32)
@@ -20,3 +22,7 @@ else()
 endif()
 
 target_link_libraries(raw PRIVATE cxxopts nowide)
+
+custom_target_sanitize_options(raw)
+custom_target_debug_options(raw)
+

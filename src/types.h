@@ -35,5 +35,5 @@ struct parse_result {
   output_type output;
   bool is_help_cmd;
   bool verbose;
-  get_string_vector_func str_input_args{nothing};
+  get_string_vector_func input_args{nothing};
 };
