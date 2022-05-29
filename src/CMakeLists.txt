@@ -26,3 +26,5 @@ target_link_libraries(raw PRIVATE cxxopts nowide)
 custom_target_sanitize_options(raw)
 custom_target_debug_options(raw)
 
+add_subdirectory(test)
+
