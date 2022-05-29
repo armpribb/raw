@@ -26,3 +26,8 @@ target_link_libraries(raw PRIVATE cxxopts nowide)
 custom_target_sanitize_options(raw)
 custom_target_debug_options(raw)
 
+add_library(raw_headers INTERFACE)
+target_include_directories(raw_headers INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_subdirectory(test)
+
