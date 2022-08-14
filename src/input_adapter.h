@@ -14,7 +14,7 @@ public:
   interface() = default;
   virtual ~interface() = default;
   virtual const char *info() const = 0;
-  virtual std::vector<uint8_t> read() const = 0;
+  virtual std::vector<uint8_t> read(const ios_abstract &ios) const = 0;
 
 protected:
   interface(const interface &) = default;

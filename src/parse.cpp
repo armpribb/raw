@@ -49,20 +49,20 @@ output_type get_output(const cxxopts::ParseResult &result) {
 
 class engine : public interface {
 public:
-  engine(queue_func _queue);
+  engine(print_func _print);
 
   parse_result do_parse(int argc, char **argv) override;
 
 private:
   cxxopts::Options cxx_options;
-  queue_func queue;
+  print_func print;
 };
 
-engine::engine(queue_func _queue)
+engine::engine(print_func _print)
     : cxx_options(
           "raw",
           "get hex-code representation of any cleartext or binary input"),
-      queue(std::move(_queue)) {
+      print(std::move(_print)) {
   // clang-format off
   cxx_options.add_options()
     ("i,input", "choose input [console|file|string]", cxxopts::value<std::string>()->default_value("console"))
@@ -85,8 +85,8 @@ parse_result engine::do_parse(int argc, char **argv) {
   try {
     cxx_result = cxx_options.parse(argc, argv);
   } catch (const cxxopts::OptionException &e) {
-    queue(e.what());
-    queue(cxx_options.help());
+    print(e.what());
+    print(cxx_options.help());
     return {.is_help_cmd = true};
   }
 
@@ -95,7 +95,7 @@ parse_result engine::do_parse(int argc, char **argv) {
   result.is_help_cmd = cxx_result["help"].as<bool>();
 
   if (result.is_help_cmd) {
-    queue(cxx_options.help());
+    print(cxx_options.help());
     return result;
   }
 
@@ -112,8 +112,8 @@ parse_result engine::do_parse(int argc, char **argv) {
   return result;
 }
 
-std::unique_ptr<parse::interface> get_parser(queue_func _queue) {
-  return std::make_unique<parse::engine>(_queue);
+std::unique_ptr<parse::interface> get_parser(print_func print) {
+  return std::make_unique<parse::engine>(print);
 }
 
 } // namespace parse

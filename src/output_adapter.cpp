@@ -1,7 +1,6 @@
 #include "output_adapter.h"
 
 #include <memory>
-#include <nowide/iostream.hpp>
 
 #include "clipboard_impl.h"
 
@@ -13,9 +12,9 @@ public:
 
   const char *info() const override { return "output: clipboard"; }
 
-  void write(const std::string &str) const override {
+  void write(const std::string &str, std::ostream &cout) const override {
     impl->copy_to_clipboard(str);
-    nowide::cout << "<result copied to clipboard>\n";
+    cout << "<result copied to clipboard>\n";
   }
 
 private:
@@ -26,8 +25,8 @@ class to_console : public interface {
 public:
   const char *info() const override { return "output: console"; }
 
-  void write(const std::string &str) const override {
-    nowide::cout << "< " << str << "\n";
+  void write(const std::string &str, std::ostream &cout) const override {
+    cout << "< " << str << "\n";
   }
 };
 
@@ -35,15 +34,15 @@ class to_file : public interface {
 public:
   const char *info() const override { return "output: file"; }
 
-  void write(const std::string &str) const override {
-    nowide::cout << "<not implemented yet>\n";
+  void write(const std::string &str, std::ostream &cout) const override {
+    cout << "<not implemented yet>\n";
   }
 };
 
 class invalid : public interface {
   const char *info() const override { return "output: invalid"; }
-  
-  void write(const std::string &) const override {}
+
+  void write(const std::string &, std::ostream &) const override {}
 };
 
 std::unique_ptr<output::interface> get_output_adapter(output_type type) {

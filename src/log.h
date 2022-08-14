@@ -4,10 +4,12 @@
 
 class logger {
 public:
+  explicit logger(std::ostream &ostr) : output_stream(ostr) {}
   print_func print() const;
-  queue_func queue();
+  print_func queue();
   void print_queued();
 
 private:
+  std::ostream &output_stream;
   std::vector<std::string> message_queue{};
 };
