@@ -13,12 +13,12 @@ public:
   virtual parse_result do_parse(int argc, char **argv) = 0;
 
 protected:
-  interface(const interface&) = default;
-  interface(interface&&) = default;
-  interface& operator=(const interface&) = default;
-  interface& operator=(interface&&) = default;
+  interface(const interface &) = default;
+  interface(interface &&) = default;
+  interface &operator=(const interface &) = default;
+  interface &operator=(interface &&) = default;
 };
 
-std::unique_ptr<parse::interface> get_parser(print_func print = _none);
+std::unique_ptr<parse::interface> get_parser(const print_func &print = _none);
 
 } // namespace parse

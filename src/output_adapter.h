@@ -11,7 +11,7 @@ class interface {
 public:
   interface() = default;
   virtual ~interface() = default;
-  virtual const char *info() const = 0;
+  [[nodiscard]] virtual const char *info() const = 0;
   virtual void write(const std::string &str, std::ostream &cout) const = 0;
 
 protected:

@@ -10,7 +10,9 @@ class to_clipboard : public interface {
 public:
   to_clipboard() : impl(std::make_unique<clipboard_impl>()){};
 
-  const char *info() const override { return "output: clipboard"; }
+  [[nodiscard]] const char *info() const override {
+    return "output: clipboard";
+  }
 
   void write(const std::string &str, std::ostream &cout) const override {
     impl->copy_to_clipboard(str);
@@ -23,7 +25,7 @@ private:
 
 class to_console : public interface {
 public:
-  const char *info() const override { return "output: console"; }
+  [[nodiscard]] const char *info() const override { return "output: console"; }
 
   void write(const std::string &str, std::ostream &cout) const override {
     cout << "< " << str << "\n";
@@ -32,7 +34,7 @@ public:
 
 class to_file : public interface {
 public:
-  const char *info() const override { return "output: file"; }
+  [[nodiscard]] const char *info() const override { return "output: file"; }
 
   void write(const std::string &str, std::ostream &cout) const override {
     cout << "<not implemented yet>\n";
@@ -40,7 +42,7 @@ public:
 };
 
 class invalid : public interface {
-  const char *info() const override { return "output: invalid"; }
+  [[nodiscard]] const char *info() const override { return "output: invalid"; }
 
   void write(const std::string &, std::ostream &) const override {}
 };

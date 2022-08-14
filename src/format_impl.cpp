@@ -79,7 +79,7 @@ std::string engine::process(const std::vector<uint8_t> &raw_data) const {
     detail::convert_to_uppercase(hex_strings);
   }
 
-  const auto output_string = detail::combine_to_string(
+  auto output_string = detail::combine_to_string(
       hex_strings, config.byte_separator, config.use_hex_prefix);
 
   return output_string;

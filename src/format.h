@@ -12,7 +12,8 @@ class interface {
 public:
   interface() = default;
   virtual ~interface() = default;
-  virtual std::string process(const std::vector<uint8_t> &raw_data) const = 0;
+  [[nodiscard]] virtual std::string
+  process(const std::vector<uint8_t> &raw_data) const = 0;
 
 protected:
   interface(const interface &) = default;

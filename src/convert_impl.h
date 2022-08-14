@@ -16,7 +16,7 @@ public:
          std::unique_ptr<ios_abstract> ios);
 
   void run() const override;
-  bool proceed() const;
+  [[nodiscard]] bool proceed() const;
 
 private:
   std::unique_ptr<format::interface> formatter;
