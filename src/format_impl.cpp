@@ -1,4 +1,4 @@
-#include "format.h"
+#include "format_impl.h"
 
 #include <algorithm>
 #include <iomanip>
@@ -71,17 +71,6 @@ std::string combine_to_string(const std::vector<std::string> &hex_strings,
 }
 
 } // namespace detail
-
-class engine : public interface {
-public:
-  engine() = default;
-  engine(format_config cnf) : config(std::move(cnf)){};
-
-  std::string process(const std::vector<uint8_t> &raw_data) const override;
-
-private:
-  format_config config{};
-};
 
 std::string engine::process(const std::vector<uint8_t> &raw_data) const {
   auto hex_strings = detail::convert_to_hex(raw_data, config.n_byte_group);

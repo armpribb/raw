@@ -3,24 +3,24 @@
 #include <iterator>
 #include <memory>
 #include <nowide/fstream.hpp>
-#include <nowide/iostream.hpp>
 #include <stdexcept>
 #include <utility>
 
 namespace input {
 
 namespace detail {
-std::vector<uint8_t> read_file_as_binary(const std::string &filename) {
-  nowide::ifstream inputfile(filename, std::ios::binary);
+std::vector<uint8_t> read_file_as_binary(const std::string &filename,
+                                         std::ostream &cerr) {
+  nowide::ifstream input_file(filename, std::ios::binary);
 
-  if (!inputfile.is_open()) {
-    nowide::cerr << "Failed to open '" << filename << "'\n";
+  if (!input_file.is_open()) {
+    cerr << "Failed to open '" << filename << "'\n";
     return {};
   }
 
-  inputfile.unsetf(std::ios_base::skipws);
+  input_file.unsetf(std::ios_base::skipws);
 
-  std::vector<uint8_t> byte_vec{std::istream_iterator<uint8_t>(inputfile),
+  std::vector<uint8_t> byte_vec{std::istream_iterator<uint8_t>(input_file),
                                 std::istream_iterator<uint8_t>()};
 
   return byte_vec;
@@ -43,11 +43,11 @@ class from_console : public interface {
 public:
   const char *info() const override { return "input: console"; }
 
-  std::vector<uint8_t> read() const override {
+  std::vector<uint8_t> read(const ios_abstract &ios) const override {
     std::string input_str{};
 
-    nowide::cout << "> ";
-    std::getline(nowide::cin, input_str);
+    ios.cout << "> ";
+    std::getline(ios.cin, input_str);
 
     return detail::string_to_byte_vector(input_str);
   }
@@ -55,20 +55,20 @@ public:
 
 class from_file : public interface {
 public:
-  from_file(std::vector<std::string> names)
+  explicit from_file(std::vector<std::string> names)
       : filenames(std::move(names)), iter(filenames.begin()) {}
 
   const char *info() const override { return "input: file"; }
 
-  std::vector<uint8_t> read() const override {
+  std::vector<uint8_t> read(const ios_abstract &ios) const override {
     if (iter == filenames.end()) {
       return {};
     } else if (iter != filenames.begin()) {
-      nowide::cout << "(hit enter to continue)";
-      nowide::cin.get();
+      ios.cout << "(hit enter to continue)";
+      ios.cin.get();
     }
 
-    return detail::read_file_as_binary(*iter++);
+    return detail::read_file_as_binary(*iter++, ios.cerr);
   }
 
 private:
@@ -78,17 +78,17 @@ private:
 
 class from_string : public interface {
 public:
-  from_string(std::vector<std::string> _input)
+  explicit from_string(std::vector<std::string> _input)
       : input(std::move(_input)), iter(input.begin()) {}
 
   const char *info() const override { return "input: text"; }
 
-  std::vector<uint8_t> read() const override {
+  std::vector<uint8_t> read(const ios_abstract &ios) const override {
     if (iter == input.end()) {
       return {};
     } else if (iter != input.begin()) {
-      nowide::cout << "(hit enter to continue)";
-      nowide::cin.get();
+      ios.cout << "(hit enter to continue)";
+      ios.cin.get();
     }
 
     return detail::string_to_byte_vector(*iter++);
@@ -103,7 +103,7 @@ class from_internal : public interface {
 public:
   const char *info() const override { return "input: internal"; }
 
-  std::vector<uint8_t> read() const override {
+  std::vector<uint8_t> read(const ios_abstract &ios) const override {
     return detail::string_to_byte_vector(line);
   }
 
@@ -117,7 +117,7 @@ class invalid : public interface {
 public:
   const char *info() const override { return "input: invalid"; }
 
-  std::vector<uint8_t> read() const override { return {}; }
+  std::vector<uint8_t> read(const ios_abstract &) const override { return {}; }
 };
 
 std::unique_ptr<input::interface>

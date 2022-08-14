@@ -2,15 +2,16 @@
 
 #include <cstdint>
 #include <functional>
+#include <istream>
+#include <ostream>
 #include <string>
 #include <vector>
 
 using print_func = std::function<void(const std::string &)>;
-using queue_func = std::function<void(const std::string &)>;
 using get_string_vector_func = std::function<std::vector<std::string>(void)>;
 
-inline void none(const std::string &) {}
-inline std::vector<std::string> nothing() { return {}; }
+inline void _none(const std::string &) {}
+inline std::vector<std::string> _nothing() { return {}; }
 
 enum class input_type : uint8_t {
   invalid = 0,
@@ -35,5 +36,13 @@ struct parse_result {
   output_type output;
   bool is_help_cmd;
   bool verbose;
-  get_string_vector_func str_input_args{nothing};
+  get_string_vector_func input_args{_nothing};
+};
+
+struct ios_abstract {
+  ios_abstract(std::ostream &_cerr, std::istream &_cin, std::ostream &_cout)
+      : cerr(_cerr), cin(_cin), cout(_cout) {}
+  std::ostream &cerr;
+  std::istream &cin;
+  std::ostream &cout;
 };

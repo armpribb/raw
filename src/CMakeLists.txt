@@ -1,8 +1,8 @@
 target_sources(raw
     PRIVATE
         main.cpp
-        convert.cpp
-        format.cpp
+        convert_impl.cpp
+        format_impl.cpp
         input_adapter.cpp
         log.cpp
         output_adapter.cpp

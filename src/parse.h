@@ -19,6 +19,6 @@ protected:
   interface& operator=(interface&&) = default;
 };
 
-std::unique_ptr<parse::interface> get_parser(queue_func _queue = none);
+std::unique_ptr<parse::interface> get_parser(print_func print = _none);
 
 } // namespace parse
