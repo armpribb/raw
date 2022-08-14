@@ -49,7 +49,7 @@ output_type get_output(const cxxopts::ParseResult &result) {
 
 class engine : public interface {
 public:
-  engine(print_func _print);
+  explicit engine(print_func _print);
 
   parse_result do_parse(int argc, char **argv) override;
 
@@ -112,7 +112,7 @@ parse_result engine::do_parse(int argc, char **argv) {
   return result;
 }
 
-std::unique_ptr<parse::interface> get_parser(print_func print) {
+std::unique_ptr<parse::interface> get_parser(const print_func &print) {
   return std::make_unique<parse::engine>(print);
 }
 

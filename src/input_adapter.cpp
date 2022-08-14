@@ -41,7 +41,7 @@ std::vector<uint8_t> string_to_byte_vector(const std::string &str) {
 
 class from_console : public interface {
 public:
-  const char *info() const override { return "input: console"; }
+  [[nodiscard]] const char *info() const override { return "input: console"; }
 
   std::vector<uint8_t> read(const ios_abstract &ios) const override {
     std::string input_str{};
@@ -101,9 +101,10 @@ private:
 
 class from_internal : public interface {
 public:
-  const char *info() const override { return "input: internal"; }
+  [[nodiscard]] const char *info() const override { return "input: internal"; }
 
-  std::vector<uint8_t> read(const ios_abstract &ios) const override {
+  [[nodiscard]] std::vector<uint8_t>
+  read(const ios_abstract &ios) const override {
     return detail::string_to_byte_vector(line);
   }
 
@@ -115,9 +116,11 @@ private:
 
 class invalid : public interface {
 public:
-  const char *info() const override { return "input: invalid"; }
+  [[nodiscard]] const char *info() const override { return "input: invalid"; }
 
-  std::vector<uint8_t> read(const ios_abstract &) const override { return {}; }
+  [[nodiscard]] std::vector<uint8_t> read(const ios_abstract &) const override {
+    return {};
+  }
 };
 
 std::unique_ptr<input::interface>

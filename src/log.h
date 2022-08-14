@@ -5,7 +5,7 @@
 class logger {
 public:
   explicit logger(std::ostream &ostr) : output_stream(ostr) {}
-  print_func print() const;
+  [[nodiscard]] print_func print() const;
   print_func queue();
   void print_queued();
 
