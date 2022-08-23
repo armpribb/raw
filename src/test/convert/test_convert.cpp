@@ -10,20 +10,18 @@ const std::string some_test_string{"blubber"};
 const std::string other_test_string{"schwabbel"};
 const std::vector<uint8_t> some_test_vector{0xde, 0xad, 0xbe, 0xef};
 const std::vector<uint8_t> other_test_vector{0xba, 0xd4, 0xf0, 0x0f};
-
-std::ostringstream mock_cerr{};
-std::stringstream mock_cin{};
-std::ostringstream mock_cout{};
 } // namespace test_data
 
 class ConvertTest : public ::testing::Test {
 protected:
-  std::unique_ptr<ios_abstract> ios = std::make_unique<ios_abstract>(
-      test_data::mock_cerr, test_data::mock_cin, test_data::mock_cout);
+  std::ostringstream mock_cerr{};
+  std::stringstream mock_cin{};
+  std::ostringstream mock_cout{};
+  stream_provider ios{mock_cerr, mock_cin, mock_cout};
 };
 
 TEST_F(ConvertTest, NoInput_RunDoesntRunForever) {
-  const auto converter = convert::get_converter({}, std::move(ios));
+  const auto converter = convert::get_converter({}, ios);
   converter->run();
   // if we reach this, we are good
   EXPECT_TRUE(true);
@@ -32,9 +30,9 @@ TEST_F(ConvertTest, NoInput_RunDoesntRunForever) {
 TEST_F(ConvertTest, EmptyInput_ProceedReturnsFalse) {
   std::vector<uint8_t> input_inject{};
   auto input = std::make_unique<input::mock>(input_inject);
-  const convert::engine converter(
-      format::get_format_engine({}), std::move(input),
-      output::get_output_adapter({}), std::move(ios));
+  const convert::engine converter(format::get_format_engine({}),
+                                  std::move(input),
+                                  output::get_output_adapter({}), ios);
   ASSERT_FALSE(converter.proceed());
 }
 
@@ -42,9 +40,9 @@ TEST_F(ConvertTest, NonEmptyInput_ProceedReturnsTrue) {
   std::vector<uint8_t> input_inject{test_data::some_test_vector};
 
   auto input = std::make_unique<input::mock>(input_inject);
-  const convert::engine converter(
-      format::get_format_engine({}), std::move(input),
-      output::get_output_adapter({}), std::move(ios));
+  const convert::engine converter(format::get_format_engine({}),
+                                  std::move(input),
+                                  output::get_output_adapter({}), ios);
 
   ASSERT_TRUE(converter.proceed());
 
@@ -64,7 +62,7 @@ TEST_F(ConvertTest, EmptyInput_NothingFormatted_NothingPassedToOutut) {
   auto output = std::make_unique<output::mock>(output_read);
 
   const convert::engine converter(std::move(formatter), std::move(input),
-                                  std::move(output), std::move(ios));
+                                  std::move(output), ios);
 
   converter.run();
 
@@ -84,7 +82,7 @@ TEST_F(ConvertTest, InputPassedToFormatter_FormatPassedToOutput) {
   auto output = std::make_unique<output::mock>(output_read);
 
   const convert::engine converter(std::move(formatter), std::move(input),
-                                  std::move(output), std::move(ios));
+                                  std::move(output), ios);
 
   EXPECT_TRUE(converter.proceed());
   ASSERT_EQ(test_data::some_test_vector, format_read);
@@ -110,7 +108,7 @@ TEST_F(ConvertTest, VerboseOutputAsExpected) {
   };
 
   const auto converter =
-      convert::get_converter({.verbose = true}, std::move(ios), print_function);
+      convert::get_converter({.verbose = true}, ios, print_function);
 
   ASSERT_EQ(3, verbose_output.size());
   ASSERT_EQ("format: 0xDU, 0xMM, 0xYF, 0xOR, 0xMA, 0xT! (\"Hello, World!\")",
