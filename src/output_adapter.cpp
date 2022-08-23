@@ -14,9 +14,9 @@ public:
     return "output: clipboard";
   }
 
-  void write(const std::string &str, std::ostream &cout) const override {
-    impl->copy_to_clipboard(str);
-    cout << "<result copied to clipboard>\n";
+  void write(const std::string &str, const stream_provider &ios) const override {
+    impl->copy_to_clipboard(str, ios.err);
+    ios.secondary_out << "<result copied to clipboard>\n";
   }
 
 private:
@@ -27,8 +27,9 @@ class to_console : public interface {
 public:
   [[nodiscard]] const char *info() const override { return "output: console"; }
 
-  void write(const std::string &str, std::ostream &cout) const override {
-    cout << "< " << str << "\n";
+  void write(const std::string &str, const stream_provider &ios) const override {
+    ios.secondary_out << "< ";
+    ios.out << str << "\n";
   }
 };
 
@@ -36,15 +37,15 @@ class to_file : public interface {
 public:
   [[nodiscard]] const char *info() const override { return "output: file"; }
 
-  void write(const std::string &str, std::ostream &cout) const override {
-    cout << "<not implemented yet>\n";
+  void write(const std::string &str, const stream_provider &ios) const override {
+    ios.secondary_out << "<not implemented yet>\n";
   }
 };
 
 class invalid : public interface {
   [[nodiscard]] const char *info() const override { return "output: invalid"; }
 
-  void write(const std::string &, std::ostream &) const override {}
+  void write(const std::string &, const stream_provider &) const override {}
 };
 
 std::unique_ptr<output::interface> get_output_adapter(output_type type) {

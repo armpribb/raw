@@ -2,10 +2,10 @@
 
 #include <Windows.h>
 #include <nowide/convert.hpp>
-#include <nowide/iostream.hpp>
 
 namespace output {
-void clipboard_impl::copy_to_clipboard(const std::string &str) const {
+void clipboard_impl::copy_to_clipboard(const std::string &str,
+                                       std::ostream &_cerr) const {
   auto wstr = nowide::widen(str);
 
   HWND handle = nullptr;
@@ -27,7 +27,7 @@ void clipboard_impl::copy_to_clipboard(const std::string &str) const {
   GlobalUnlock(copy_handle);
 
   if (!SetClipboardData(CF_UNICODETEXT, copy_handle)) {
-    nowide::cerr << "Cannot copy to clipboard!\n";
+    _cerr << "Cannot copy to clipboard!\n";
   }
 
   CloseClipboard();

@@ -34,15 +34,18 @@ struct parse_result {
   format_config format;
   input_type input;
   output_type output;
-  bool is_help_cmd;
   bool verbose;
   get_string_vector_func input_args{_nothing};
 };
 
-struct ios_abstract {
-  ios_abstract(std::ostream &_cerr, std::istream &_cin, std::ostream &_cout)
-      : cerr(_cerr), cin(_cin), cout(_cout) {}
-  std::ostream &cerr;
-  std::istream &cin;
-  std::ostream &cout;
+struct stream_provider {
+  stream_provider(std::ostream &_cerr, std::istream &_cin, std::ostream &_cout)
+      : err(_cerr), in(_cin), out(_cout), secondary_out(_cout) {}
+  stream_provider(std::ostream &_cerr, std::istream &_cin, std::ostream &_cout,
+                  std::ostream &_secondary_cout)
+      : err(_cerr), in(_cin), out(_cout), secondary_out(_secondary_cout) {}
+  std::ostream &err;
+  std::istream &in;
+  std::ostream &out;
+  std::ostream &secondary_out;
 };
