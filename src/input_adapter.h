@@ -15,7 +15,7 @@ public:
   virtual ~interface() = default;
   [[nodiscard]] virtual const char *info() const = 0;
   [[nodiscard]] virtual std::vector<uint8_t>
-  read(const ios_abstract &ios) const = 0;
+  read(const stream_provider &ios) const = 0;
 
 protected:
   interface(const interface &) = default;

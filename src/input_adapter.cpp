@@ -10,11 +10,11 @@ namespace input {
 
 namespace detail {
 std::vector<uint8_t> read_file_as_binary(const std::string &filename,
-                                         std::ostream &cerr) {
+                                         std::ostream &_cerr) {
   nowide::ifstream input_file(filename, std::ios::binary);
 
   if (!input_file.is_open()) {
-    cerr << "Failed to open '" << filename << "'\n";
+    _cerr << "Failed to open '" << filename << "'\n";
     return {};
   }
 
@@ -43,11 +43,12 @@ class from_console : public interface {
 public:
   [[nodiscard]] const char *info() const override { return "input: console"; }
 
-  std::vector<uint8_t> read(const ios_abstract &ios) const override {
+  [[nodiscard]] std::vector<uint8_t>
+  read(const stream_provider &ios) const override {
     std::string input_str{};
 
-    ios.cout << "> ";
-    std::getline(ios.cin, input_str);
+    ios.secondary_out << "> ";
+    std::getline(ios.in, input_str);
 
     return detail::string_to_byte_vector(input_str);
   }
@@ -60,15 +61,15 @@ public:
 
   const char *info() const override { return "input: file"; }
 
-  std::vector<uint8_t> read(const ios_abstract &ios) const override {
+  std::vector<uint8_t> read(const stream_provider &ios) const override {
     if (iter == filenames.end()) {
       return {};
     } else if (iter != filenames.begin()) {
-      ios.cout << "(hit enter to continue)";
-      ios.cin.get();
+      ios.secondary_out << "(hit enter to continue)";
+      ios.in.get();
     }
 
-    return detail::read_file_as_binary(*iter++, ios.cerr);
+    return detail::read_file_as_binary(*iter++, ios.err);
   }
 
 private:
@@ -83,12 +84,12 @@ public:
 
   const char *info() const override { return "input: text"; }
 
-  std::vector<uint8_t> read(const ios_abstract &ios) const override {
+  std::vector<uint8_t> read(const stream_provider &ios) const override {
     if (iter == input.end()) {
       return {};
     } else if (iter != input.begin()) {
-      ios.cout << "(hit enter to continue)";
-      ios.cin.get();
+      ios.secondary_out << "(hit enter to continue)";
+      ios.in.get();
     }
 
     return detail::string_to_byte_vector(*iter++);
@@ -104,7 +105,7 @@ public:
   [[nodiscard]] const char *info() const override { return "input: internal"; }
 
   [[nodiscard]] std::vector<uint8_t>
-  read(const ios_abstract &ios) const override {
+  read(const stream_provider &ios) const override {
     return detail::string_to_byte_vector(line);
   }
 
@@ -118,7 +119,8 @@ class invalid : public interface {
 public:
   [[nodiscard]] const char *info() const override { return "input: invalid"; }
 
-  [[nodiscard]] std::vector<uint8_t> read(const ios_abstract &) const override {
+  [[nodiscard]] std::vector<uint8_t>
+  read(const stream_provider &) const override {
     return {};
   }
 };

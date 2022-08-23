@@ -12,7 +12,7 @@ public:
   interface() = default;
   virtual ~interface() = default;
   [[nodiscard]] virtual const char *info() const = 0;
-  virtual void write(const std::string &str, std::ostream &cout) const = 0;
+  virtual void write(const std::string &str, const stream_provider &ios) const = 0;
 
 protected:
   interface(const interface &) = default;

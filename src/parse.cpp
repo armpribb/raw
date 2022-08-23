@@ -87,14 +87,14 @@ parse_result engine::do_parse(int argc, char **argv) {
   } catch (const cxxopts::OptionException &e) {
     print(e.what());
     print(cxx_options.help());
-    return {.is_help_cmd = true};
+    return {};
   }
 
   parse_result result{};
 
-  result.is_help_cmd = cxx_result["help"].as<bool>();
+  auto is_help_cmd = cxx_result["help"].as<bool>();
 
-  if (result.is_help_cmd) {
+  if (is_help_cmd) {
     print(cxx_options.help());
     return result;
   }
