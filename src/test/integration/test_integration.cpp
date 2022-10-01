@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <array>
-#include <ranges>
 #include <sstream>
 #include <string_view>
 
@@ -16,20 +15,14 @@ constexpr std::string_view test_input_3{"äöü"};
 constexpr std::string_view output_delimiter{"\n"};
 
 template <size_t Size>
-void check_expected_output(const std::array<std::string_view, Size> &expected,
-                           const std::ostringstream &output) {
-  ASSERT_FALSE(output.str().empty());
-
-  auto expected_it = expected.begin();
-
-  for (const auto out : std::views::split(output.str(), output_delimiter)) {
-    if (expected_it == expected.end()) {
-      EXPECT_TRUE(std::string_view(out.begin(), out.end()).empty());
-      continue;
-    }
-    EXPECT_EQ(*expected_it, std::string_view(out.begin(), out.end()));
-    ++expected_it;
+void check_expected_output(
+    const std::array<std::string_view, Size> &expected_array,
+    const std::ostringstream &output) {
+  std::ostringstream expected{};
+  for (auto it = expected_array.begin(); it != expected_array.end(); ++it) {
+    expected << *it << output_delimiter;
   }
+  EXPECT_EQ(expected.str(), output.str());
 }
 } // namespace
 
@@ -160,10 +153,6 @@ TEST_F(IntegrationTest, Dummy) {
   converter->run();
 
   std::cout << mock_cin.str() << std::endl;
-
-  for (const auto word : std::views::split(mock_cout.str(), output_delimiter)) {
-    std::cout << std::string_view(word.begin(), word.end()) << "\n";
-  }
 
   EXPECT_TRUE(mock_cerr.str().empty());
   EXPECT_FALSE(mock_cout.str().empty());
