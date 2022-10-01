@@ -10,11 +10,11 @@ namespace input {
 
 namespace detail {
 std::vector<uint8_t> read_file_as_binary(const std::string &filename,
-                                         std::ostream &_cerr) {
+                                         std::ostream &cerr_) {
   nowide::ifstream input_file(filename, std::ios::binary);
 
   if (!input_file.is_open()) {
-    _cerr << "Failed to open '" << filename << "'\n";
+    cerr_ << "Failed to open '" << filename << "'\n";
     return {};
   }
 

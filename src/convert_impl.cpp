@@ -50,12 +50,12 @@ void engine::run() const {
     ;
 }
 
-std::unique_ptr<convert::interface> get_converter(const parse_result &config,
+std::unique_ptr<convert::interface> get_converter(const convert_config &config,
                                                   stream_provider &ios,
                                                   print_func print) {
   auto fmt = format::get_format_engine(config.format);
-  auto in = input::get_input_adapter(config.input, config.input_args());
-  auto out = output::get_output_adapter(config.output);
+  auto in = input::get_input_adapter(config.input, config.input_args);
+  auto out = output::get_output_adapter(config.output, config.set_result);
 
   if (config.verbose) {
     const auto example = detail::get_example_format(*fmt, ios);

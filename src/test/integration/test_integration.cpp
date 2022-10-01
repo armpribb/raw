@@ -18,6 +18,8 @@ constexpr std::string_view output_delimiter{"\n"};
 template <size_t Size>
 void check_expected_output(const std::array<std::string_view, Size> &expected,
                            const std::ostringstream &output) {
+  ASSERT_FALSE(output.str().empty());
+
   auto expected_it = expected.begin();
 
   for (const auto out : std::views::split(output.str(), output_delimiter)) {
@@ -41,13 +43,13 @@ protected:
 };
 
 TEST_F(IntegrationTest, DefaultFormatVerboseNoInput) {
-  parse_result prs{.format = {},
-                   .input = input_type::console,
-                   .output = output_type::console,
-                   .verbose = true};
+  convert_config cnv{.format = {},
+                     .input = input_type::console,
+                     .output = output_type::console,
+                     .verbose = true};
 
   logger log{mock_cout};
-  auto converter = convert::get_converter(prs, ios, log.queue());
+  auto converter = convert::get_converter(cnv, ios, log.queue());
 
   log.print_queued();
 
@@ -61,17 +63,17 @@ TEST_F(IntegrationTest, DefaultFormatVerboseNoInput) {
 }
 
 TEST_F(IntegrationTest, FormatHexUpperCommaSpaceVerboseNoInput) {
-  parse_result prs{.format = {},
-                   .input = input_type::console,
-                   .output = output_type::console,
-                   .verbose = true};
+  convert_config cnv{.format = {},
+                     .input = input_type::console,
+                     .output = output_type::console,
+                     .verbose = true};
 
-  prs.format.use_hex_prefix = true;
-  prs.format.use_uppercase = true;
-  prs.format.byte_separator = ", ";
+  cnv.format.use_hex_prefix = true;
+  cnv.format.use_uppercase = true;
+  cnv.format.byte_separator = ", ";
 
   logger log{mock_cout};
-  auto converter = convert::get_converter(prs, ios, log.queue());
+  auto converter = convert::get_converter(cnv, ios, log.queue());
 
   log.print_queued();
 
@@ -86,12 +88,12 @@ TEST_F(IntegrationTest, FormatHexUpperCommaSpaceVerboseNoInput) {
 }
 
 TEST_F(IntegrationTest, DefaultFormatWithInput) {
-  parse_result prs{.format = {},
-                   .input = input_type::console,
-                   .output = output_type::console,
-                   .verbose = false};
+  convert_config cnv{.format = {},
+                     .input = input_type::console,
+                     .output = output_type::console,
+                     .verbose = false};
 
-  auto converter = convert::get_converter(prs, ios);
+  auto converter = convert::get_converter(cnv, ios);
 
   mock_cin << test_input_1 << "\n";
   mock_cin << test_input_2 << "\n";
@@ -106,18 +108,48 @@ TEST_F(IntegrationTest, DefaultFormatWithInput) {
   check_expected_output(expected, mock_cout);
 }
 
+TEST_F(IntegrationTest, DefaultFormatWithInputOutputToString) {
+  std::ostringstream result{};
+
+  auto append_result = [&result](const std::string &str) {
+    result << str << "\n";
+  };
+
+  convert_config cnv{.format = {},
+                     .input = input_type::console,
+                     .output = output_type::string,
+                     .verbose = false,
+                     .set_result = append_result};
+
+  auto converter = convert::get_converter(cnv, ios);
+
+  mock_cin << test_input_1 << "\n";
+  mock_cin << test_input_2 << "\n";
+  mock_cin << test_input_3 << "\n";
+
+  converter->run();
+
+  constexpr std::array<std::string_view, 3> expected{
+      "48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21",
+      "77 68 61 74 27 73 20 75 70 2c 20 79 6f 21 3f", "c3 a4 c3 b6 c3 bc"};
+
+  check_expected_output(expected, result);
+  EXPECT_TRUE(mock_cerr.str().empty());
+  EXPECT_TRUE(mock_cout.str().empty());
+}
+
 TEST_F(IntegrationTest, Dummy) {
   format_config fmt{.use_hex_prefix = false,
                     .use_uppercase = false,
                     .n_byte_group = 1,
                     .byte_separator = " "};
-  parse_result prs{.format = fmt,
-                   .input = input_type::console,
-                   .output = output_type::console,
-                   .verbose = false};
+  convert_config cnv{.format = fmt,
+                     .input = input_type::console,
+                     .output = output_type::console,
+                     .verbose = false};
 
   logger log{mock_cout};
-  auto converter = convert::get_converter(prs, ios, log.queue());
+  auto converter = convert::get_converter(cnv, ios, log.queue());
 
   mock_cin << test_input_1 << "\n";
   mock_cin << test_input_2 << "\n";

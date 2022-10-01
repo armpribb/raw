@@ -51,7 +51,7 @@ class engine : public interface {
 public:
   explicit engine(print_func _print);
 
-  parse_result do_parse(int argc, char **argv) override;
+  convert_config do_parse(int argc, char **argv) override;
 
 private:
   cxxopts::Options cxx_options;
@@ -77,7 +77,7 @@ engine::engine(print_func _print)
   // clang-format on
 };
 
-parse_result engine::do_parse(int argc, char **argv) {
+convert_config engine::do_parse(int argc, char **argv) {
   nowide::args _(argc, argv);
 
   cxxopts::ParseResult cxx_result{};
@@ -90,7 +90,7 @@ parse_result engine::do_parse(int argc, char **argv) {
     return {};
   }
 
-  parse_result result{};
+  convert_config result{};
 
   auto is_help_cmd = cxx_result["help"].as<bool>();
 
@@ -104,10 +104,7 @@ parse_result engine::do_parse(int argc, char **argv) {
   result.output = detail::get_output(cxx_result);
   result.verbose = cxx_result["verbose"].as<bool>();
 
-  result.input_args =
-      [args = cxx_result["args"].as<std::vector<std::string>>()]() {
-        return args;
-      };
+  result.input_args = cxx_result["args"].as<std::vector<std::string>>();
 
   return result;
 }

@@ -6,7 +6,8 @@ namespace {
 std::string dummy{};
 }
 
-std::unique_ptr<output::interface> get_output_adapter(output_type type) {
+std::unique_ptr<output::interface>
+get_output_adapter(output_type type, set_string_func set_result) {
   (void)type;
   return std::make_unique<output::mock>(dummy);
 }

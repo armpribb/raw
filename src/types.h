@@ -8,10 +8,9 @@
 #include <vector>
 
 using print_func = std::function<void(const std::string &)>;
-using get_string_vector_func = std::function<std::vector<std::string>(void)>;
+using set_string_func = std::function<void(const std::string &)>;
 
-inline void _none(const std::string &) {}
-inline std::vector<std::string> _nothing() { return {}; }
+inline void set_none(const std::string &) {}
 
 enum class input_type : uint8_t {
   invalid = 0,
@@ -21,7 +20,13 @@ enum class input_type : uint8_t {
   internal
 };
 
-enum class output_type : uint8_t { invalid = 0, clipboard, console, file };
+enum class output_type : uint8_t {
+  invalid = 0,
+  clipboard,
+  console,
+  file,
+  string
+};
 
 struct format_config {
   bool use_hex_prefix{false};
@@ -30,20 +35,21 @@ struct format_config {
   std::string byte_separator{" "};
 };
 
-struct parse_result {
+struct convert_config {
   format_config format;
   input_type input;
   output_type output;
   bool verbose;
-  get_string_vector_func input_args{_nothing};
+  std::vector<std::string> input_args;
+  set_string_func set_result;
 };
 
 struct stream_provider {
-  stream_provider(std::ostream &_cerr, std::istream &_cin, std::ostream &_cout)
-      : err(_cerr), in(_cin), out(_cout), secondary_out(_cout) {}
-  stream_provider(std::ostream &_cerr, std::istream &_cin, std::ostream &_cout,
-                  std::ostream &_secondary_cout)
-      : err(_cerr), in(_cin), out(_cout), secondary_out(_secondary_cout) {}
+  stream_provider(std::ostream &cerr, std::istream &cin, std::ostream &cout)
+      : err(cerr), in(cin), out(cout), secondary_out(cout) {}
+  stream_provider(std::ostream &cerr, std::istream &cin, std::ostream &cout,
+                  std::ostream &secondary_cout)
+      : err(cerr), in(cin), out(cout), secondary_out(secondary_cout) {}
   std::ostream &err;
   std::istream &in;
   std::ostream &out;
