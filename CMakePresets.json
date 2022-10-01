@@ -56,6 +56,7 @@
             "binaryDir": "${sourceDir}/build/mac-x64",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-macos-amd64-clang.cmake"
             }
         },
