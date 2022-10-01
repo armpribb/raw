@@ -19,8 +19,8 @@ protected:
   interface &operator=(interface &&) = default;
 };
 
-std::unique_ptr<convert::interface> get_converter(const parse_result &config,
+std::unique_ptr<convert::interface> get_converter(const convert_config &config,
                                                   stream_provider &ios,
-                                                  print_func print = _none);
+                                                  print_func print = set_none);
 
 } // namespace convert

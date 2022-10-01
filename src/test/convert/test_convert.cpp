@@ -32,7 +32,7 @@ TEST_F(ConvertTest, EmptyInput_ProceedReturnsFalse) {
   auto input = std::make_unique<input::mock>(input_inject);
   const convert::engine converter(format::get_format_engine({}),
                                   std::move(input),
-                                  output::get_output_adapter({}), ios);
+      output::get_output_adapter({}, set_none), ios);
   ASSERT_FALSE(converter.proceed());
 }
 
@@ -42,7 +42,7 @@ TEST_F(ConvertTest, NonEmptyInput_ProceedReturnsTrue) {
   auto input = std::make_unique<input::mock>(input_inject);
   const convert::engine converter(format::get_format_engine({}),
                                   std::move(input),
-                                  output::get_output_adapter({}), ios);
+      output::get_output_adapter({}, set_none), ios);
 
   ASSERT_TRUE(converter.proceed());
 
