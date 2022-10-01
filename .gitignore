@@ -1,5 +1,6 @@
 .cache
 .clangd
+.DS_Store
 .idea
 .vscode
 build*
