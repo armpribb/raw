@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <array>
+#include <numeric>
 #include <sstream>
 #include <string_view>
 
@@ -12,18 +12,30 @@ constexpr std::string_view test_input_1{"Hello, World!"};
 constexpr std::string_view test_input_2{"what's up, yo!?"};
 constexpr std::string_view test_input_3{"äöü"};
 
-constexpr std::string_view output_delimiter{"\n"};
+constexpr char output_delimiter = '\n';
 
-template <size_t Size>
-void check_expected_output(
-    const std::array<std::string_view, Size> &expected_array,
-    const std::ostringstream &output) {
-  std::ostringstream expected{};
-  for (auto it = expected_array.begin(); it != expected_array.end(); ++it) {
-    expected << *it << output_delimiter;
-  }
-  EXPECT_EQ(expected.str(), output.str());
+constexpr std::string accumulate_string_vector(std::vector<std::string> vec) {
+  std::string result =
+      std::accumulate(std::next(vec.begin()), vec.end(), vec[0],
+                      [](const std::string &a, const std::string &b) {
+                        return a + output_delimiter + b;
+                      });
+  return result;
 }
+
+constexpr std::string remove_trailing_newlines(std::string str) {
+  while (!str.empty() && str.back() == '\n') {
+    str.pop_back();
+  }
+  return str;
+}
+
+void check_expected_output(const std::vector<std::string> &expected_vec,
+                           const std::string &output) {
+  auto expected = accumulate_string_vector(expected_vec);
+  EXPECT_EQ(expected, remove_trailing_newlines(output));
+}
+
 } // namespace
 
 class IntegrationTest : public ::testing::Test {
@@ -48,11 +60,11 @@ TEST_F(IntegrationTest, DefaultFormatVerboseNoInput) {
 
   converter->run();
 
-  constexpr std::array<std::string_view, 3> expected{
+  const std::vector<std::string> expected{
       "format: 48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21 (\"Hello, World!\")",
       "input: console", "output: console"};
 
-  check_expected_output(expected, mock_cout);
+  check_expected_output(expected, mock_cout.str());
 }
 
 TEST_F(IntegrationTest, FormatHexUpperCommaSpaceVerboseNoInput) {
@@ -72,12 +84,12 @@ TEST_F(IntegrationTest, FormatHexUpperCommaSpaceVerboseNoInput) {
 
   converter->run();
 
-  constexpr std::array<std::string_view, 3> expected{
+  const std::vector<std::string> expected{
       "format: 0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x2C, 0x20, 0x57, 0x6F, 0x72, "
       "0x6C, 0x64, 0x21 (\"Hello, World!\")",
       "input: console", "output: console"};
 
-  check_expected_output(expected, mock_cout);
+  check_expected_output(expected, mock_cout.str());
 }
 
 TEST_F(IntegrationTest, DefaultFormatWithInput) {
@@ -94,11 +106,11 @@ TEST_F(IntegrationTest, DefaultFormatWithInput) {
 
   converter->run();
 
-  constexpr std::array<std::string_view, 3> expected{
+  const std::vector<std::string> expected{
       "48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21",
       "77 68 61 74 27 73 20 75 70 2c 20 79 6f 21 3f", "c3 a4 c3 b6 c3 bc"};
 
-  check_expected_output(expected, mock_cout);
+  check_expected_output(expected, mock_cout.str());
 }
 
 TEST_F(IntegrationTest, DefaultFormatWithInputOutputToString) {
@@ -122,11 +134,11 @@ TEST_F(IntegrationTest, DefaultFormatWithInputOutputToString) {
 
   converter->run();
 
-  constexpr std::array<std::string_view, 3> expected{
+  const std::vector<std::string> expected{
       "48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21",
       "77 68 61 74 27 73 20 75 70 2c 20 79 6f 21 3f", "c3 a4 c3 b6 c3 bc"};
 
-  check_expected_output(expected, result);
+  check_expected_output(expected, result.str());
   EXPECT_TRUE(mock_cerr.str().empty());
   EXPECT_TRUE(mock_cout.str().empty());
 }
