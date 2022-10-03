@@ -8,6 +8,9 @@
 
 namespace format {
 
+std::string process(const std::vector<uint8_t> &raw_data,
+                    const format_config &config = {});
+
 class interface {
 public:
   interface() = default;

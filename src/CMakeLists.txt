@@ -8,8 +8,10 @@ add_library(raw_static STATIC)
 target_sources(raw_static PUBLIC
     convert_impl.cpp
     format_impl.cpp
+    input.cpp
     input_adapter.cpp
     log.cpp
+    output.cpp
     output_adapter.cpp
     parse.cpp)
 

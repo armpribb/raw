@@ -7,6 +7,12 @@ std::string dummy_inject{"0xDU, 0xMM, 0xYF, 0xOR, 0xMA, 0xT!"};
 std::vector<uint8_t> dummy_read{};
 } // namespace
 
+std::string process(const std::vector<uint8_t> &raw_data,
+                    const format_config &) {
+  format::mock formatter{dummy_inject, dummy_read};
+  return formatter.process(raw_data);
+}
+
 std::string mock::process(const std::vector<uint8_t> &raw_data) const {
   read_input = raw_data;
   return format_injection;

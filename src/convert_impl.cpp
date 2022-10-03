@@ -8,20 +8,12 @@
 namespace convert {
 
 namespace detail {
-constexpr std::array<char, 14> example{{"Hello, World!"}};
+std::string get_example_format(const format_config &config = {}) {
+  constexpr auto example = "Hello, World!";
+  const auto byte_vec = input::read(example);
+  const auto result = format::process(byte_vec, config);
 
-std::string get_example_format(format::interface &formatter,
-                               const stream_provider &ios) {
-  const auto input_adapter = input::get_input_adapter(input_type::internal);
-
-  (void)input::_internal_set(*input_adapter, example.data());
-  const auto byte_vec = input_adapter->read(ios);
-  const auto output_str = formatter.process(byte_vec);
-
-  std::ostringstream oss{};
-  oss << "format: " << output_str << " (\"" << example.data() << "\")";
-
-  return oss.str();
+  return "format: " + result + " (\"" + example + "\")";
 }
 } // namespace detail
 
@@ -58,7 +50,7 @@ std::unique_ptr<convert::interface> get_converter(const convert_config &config,
   auto out = output::get_output_adapter(config.output, config.set_result);
 
   if (config.verbose) {
-    const auto example = detail::get_example_format(*fmt, ios);
+    const auto example = detail::get_example_format(config.format);
     print(example);
     print(in->info());
     print(out->info());

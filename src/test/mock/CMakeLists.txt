@@ -7,7 +7,7 @@ target_link_libraries(mock_convert PUBLIC raw_include)
 add_library(mock_format STATIC mock_format.cpp)
 target_link_libraries(mock_format PUBLIC raw_include)
 
-add_library(mock_input STATIC mock_input.cpp)
+add_library(mock_input STATIC mock_input.cpp ../../input.cpp)
 target_link_libraries(mock_input PUBLIC raw_include)
 
 add_library(mock_output STATIC mock_output.cpp)

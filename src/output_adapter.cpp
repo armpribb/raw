@@ -4,25 +4,20 @@
 #include <utility>
 
 #include "clipboard_impl.h"
+#include "output.h"
 
 namespace output {
 
 class to_clipboard : public interface {
 public:
-  to_clipboard() : impl(std::make_unique<clipboard_impl>()){};
-
   [[nodiscard]] const char *info() const override {
     return "output: clipboard";
   }
 
   void write(const std::string &str,
              const stream_provider &ios) const override {
-    impl->copy_to_clipboard(str, ios.err);
-    ios.secondary_out << "<result copied to clipboard>\n";
+    output::write_to_clipboard(str);
   }
-
-private:
-  std::unique_ptr<clipboard_impl> impl;
 };
 
 class to_console : public interface {

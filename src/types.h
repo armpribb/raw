@@ -55,3 +55,42 @@ struct stream_provider {
   std::ostream &out;
   std::ostream &secondary_out;
 };
+
+class ostream_wrap {
+public:
+  ostream_wrap() = default;
+  ostream_wrap(std::ostream &os) : out_stream(&os) {}
+  template <typename T> const ostream_wrap &operator<<(const T &obj) const {
+    if (out_stream) {
+      *out_stream << obj;
+    }
+    return *this;
+  }
+  std::ostream *get() const { return out_stream; }
+
+private:
+  std::ostream *const out_stream = nullptr;
+};
+
+class istream_wrap {
+public:
+  istream_wrap() = default;
+  istream_wrap(std::istream &is) : in_stream(&is) {}
+  template <typename T> const istream_wrap &operator>>(T &obj) const {
+    if (in_stream) {
+      *in_stream >> obj;
+    }
+    return *this;
+  }
+  std::istream *get() const { return in_stream; }
+
+private:
+  std::istream *const in_stream = nullptr;
+};
+
+struct stream_provider_v2 {
+  ostream_wrap err;
+  istream_wrap in;
+  ostream_wrap out;
+  ostream_wrap info;
+};
