@@ -1,8 +1,10 @@
 #include "format_impl.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cctype>
 #include <iomanip>
+#include <iterator>
 #include <numeric>
 #include <sstream>
 #include <utility>
@@ -11,29 +13,48 @@ namespace format {
 
 namespace detail {
 
-constexpr auto hex_prefix = "0x";
-
-std::vector<std::string> convert_to_hex(const std::vector<uint8_t> &raw_data,
-                                        const uint8_t n_byte_group) {
-  std::vector<uint8_t> copy = raw_data;
-
-  if (n_byte_group > 0 && raw_data.size() % n_byte_group) {
-    const auto num_to_fill = n_byte_group - (raw_data.size() % n_byte_group);
-    copy.insert(copy.begin(), num_to_fill, 0);
+namespace {
+constexpr std::vector<uint8_t>
+get_padded_byte_vec(const std::vector<uint8_t> &byte_vec,
+                    const uint8_t n_byte_group) {
+  if (n_byte_group > 1 && byte_vec.size() % n_byte_group) {
+    auto padded_byte_vec = byte_vec;
+    auto num_padding_zeros = n_byte_group - (byte_vec.size() % n_byte_group);
+    padded_byte_vec.insert(padded_byte_vec.begin(), num_padding_zeros, 0);
+    assert(padded_byte_vec.size() % n_byte_group == 0);
+    return padded_byte_vec;
   }
 
-  std::vector<std::string> hex_strings{};
+  return byte_vec;
+}
 
-  for (auto it = copy.cbegin(); it != copy.cend();) {
+constexpr void check_minimum_one(uint8_t &byte) {
+  if (byte == 0)
+    byte = 1;
+  assert(byte);
+}
+} // namespace
+
+std::vector<std::string>
+get_grouped_hex_strings(const std::vector<uint8_t> &byte_vec,
+                        uint8_t n_byte_group = 1) {
+  check_minimum_one(n_byte_group);
+
+  const auto padded_byte_vec = get_padded_byte_vec(byte_vec, n_byte_group);
+
+  std::vector<std::string> hex_str_vec{};
+
+  for (auto it = padded_byte_vec.begin(); it != padded_byte_vec.end();
+       std::advance(it, n_byte_group)) {
     std::ostringstream oss{};
-    auto byte_count = n_byte_group ? n_byte_group : copy.size();
-    while (byte_count-- && it != copy.cend()) {
-      oss << std::setfill('0') << std::setw(2) << std::hex << unsigned(*it++);
-    }
-    hex_strings.push_back(oss.str());
+    auto to_str = [&oss](uint8_t byte) {
+      oss << std::setfill('0') << std::setw(2) << std::hex << unsigned(byte);
+    };
+    for_each(it, std::next(it, n_byte_group), to_str);
+    hex_str_vec.push_back(oss.str());
   }
 
-  return hex_strings;
+  return hex_str_vec;
 }
 
 constexpr void convert_to_uppercase(std::vector<std::string> &hex_strings) {
@@ -52,13 +73,14 @@ combine_to_string(const std::vector<std::string> &hex_strings,
   if (hex_strings.empty())
     return {};
 
-  auto combine = [&byte_separator, &with_hex_prefix](const std::string &a,
-                                                     const std::string &b) {
-    return a + byte_separator + (with_hex_prefix ? hex_prefix : "") + b;
+  const auto prefix = with_hex_prefix ? "0x" : "";
+
+  auto combine = [&byte_separator, &prefix](const std::string &a,
+                                            const std::string &b) {
+    return a + byte_separator + prefix + b;
   };
 
-  auto first_element =
-      (with_hex_prefix ? hex_prefix : "") + hex_strings.front();
+  const auto first_element = prefix + hex_strings.front();
 
   return std::accumulate(std::next(hex_strings.begin()), hex_strings.end(),
                          first_element, combine);
@@ -68,7 +90,8 @@ combine_to_string(const std::vector<std::string> &hex_strings,
 
 std::string process(const std::vector<uint8_t> &raw_data,
                     const format_config &config) {
-  auto hex_strings = detail::convert_to_hex(raw_data, config.n_byte_group);
+  auto hex_strings =
+      detail::get_grouped_hex_strings(raw_data, config.n_byte_group);
 
   if (config.use_uppercase) {
     detail::convert_to_uppercase(hex_strings);
