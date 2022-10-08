@@ -21,7 +21,7 @@ if(LIN OR MAC)
     FetchContent_Declare(
         clip
         GIT_REPOSITORY https://github.com/dacap/clip.git
-        GIT_TAG a65a9e543e9a270bb7c58789d15d027bbd8efb2a
+        GIT_TAG 2ada8b17b39bf41a669248a2be5c6e4be4c27f14 # v1.5
     )
 
     set(CLIP_EXAMPLES OFF CACHE BOOL "Compile clip examples")
@@ -41,4 +41,7 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+custom_target_sanitize_options(gtest_main)
+custom_target_debug_options(gtest_main)
 
