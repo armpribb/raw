@@ -1,0 +1,14 @@
+set(CTEST_CUSTOM_TESTS_IGNORE
+   ${CTEST_CUSTOM_TESTS_IGNORE}
+   nowide-test_codecvt
+   nowide-test_convert
+   nowide-test_env
+   nowide-test_env_win
+   nowide-test_fstream
+   nowide-test_fstream_cxx11
+   nowide-test_iostream
+   nowide-test_stackstring
+   nowide-test_stdio
+   nowide-test_system_n
+   nowide-test_system_w
+)
