@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "types.h"
+#include "stream_wrap.h"
 
 namespace input {
 std::vector<uint8_t> read(const std::string &str);

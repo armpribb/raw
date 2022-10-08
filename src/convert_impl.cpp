@@ -1,4 +1,5 @@
 #include "convert_impl.h"
+#include "stream_wrap.h"
 
 #include <array>
 #include <memory>

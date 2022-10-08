@@ -11,7 +11,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 include(CTest)
+configure_file(CTestCustom.cmake.in CTestCustom.cmake)
 
-add_subdirectory(3rdparty)
+add_subdirectory(3rdparty EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 

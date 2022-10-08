@@ -23,4 +23,7 @@ std::unique_ptr<convert::interface> get_converter(const convert_config &config,
                                                   stream_provider &ios,
                                                   print_func print = set_none);
 
+std::unique_ptr<convert::interface>
+get_converter_v2(const convert_config_v2 &config);
+
 } // namespace convert

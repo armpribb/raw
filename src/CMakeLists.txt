@@ -7,6 +7,8 @@ add_library(raw_static STATIC)
 
 target_sources(raw_static PUBLIC
     convert_impl.cpp
+    convert_v2.cpp
+    file_io.cpp
     format_impl.cpp
     input.cpp
     input_adapter.cpp

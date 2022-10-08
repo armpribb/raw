@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "types.h"
+#include "stream_wrap.h"
 
 namespace output {
 void write_to_clipboard(const std::string &str);

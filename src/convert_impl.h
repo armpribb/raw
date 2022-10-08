@@ -2,11 +2,13 @@
 
 #include "convert.h"
 
+#include "file_io.h"
 #include "format.h"
 #include "input.h"
 #include "input_adapter.h"
 #include "output.h"
 #include "output_adapter.h"
+#include "types.h"
 
 namespace convert {
 
