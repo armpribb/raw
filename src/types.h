@@ -31,6 +31,7 @@ enum class output_type : uint8_t {
 
 struct format_config {
   bool use_hex_prefix{false};
+  bool use_little_endian{false};
   bool use_uppercase{false};
   uint8_t n_byte_group{1};
   std::string byte_separator{" "};

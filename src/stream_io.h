@@ -3,6 +3,11 @@
 #include <istream>
 #include <ostream>
 
+#include "file_io.h"
+#include "types.h"
+
+namespace streamio {
+
 class ostream_wrap {
 public:
   ostream_wrap() = default;
@@ -37,10 +42,15 @@ private:
   std::istream *istream_ptr = nullptr;
 };
 
-struct stream_provider_v2 {
+struct provider {
   ostream_wrap err;
   istream_wrap in;
   ostream_wrap info;
   ostream_wrap out;
   istream_wrap prompt;
 };
+
+provider get_stream_provider(fileio::provider &fileio,
+                             const convert_config_v2 &config);
+
+} // namespace streamio

@@ -2,7 +2,7 @@
 
 #include "convert.h"
 #include "file_io.h"
-#include "stream_wrap.h"
+#include "stream_io.h"
 
 namespace convert {
 
@@ -17,9 +17,9 @@ private:
   void run_file_batch() const;
   void write(const std::string &str) const;
 
-  std::unique_ptr<fileio::fstream_provider> file;
+  std::unique_ptr<fileio::provider> fileio;
   convert_config_v2 config;
-  stream_provider_v2 iostream;
+  streamio::provider iostream;
 };
 
 } // namespace convert

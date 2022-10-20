@@ -11,6 +11,7 @@ format_config get_format(const cxxopts::ParseResult &result) {
   format_config config{};
 
   config.use_hex_prefix = result["hex-prefix"].as<bool>();
+  config.use_little_endian = result["little-endian"].as<bool>();
   config.use_uppercase = result["uppercase"].as<bool>();
   config.n_byte_group = result["n-byte-group"].as<uint8_t>();
   config.byte_separator = result["group-separator"].as<std::string>();
@@ -75,6 +76,7 @@ engine::engine(print_func print_)
     ("w,outfile", "specify output file (optional)", cxxopts::value<std::string>()->default_value(""))
     ("n,n-byte-group", "group n bytes together", cxxopts::value<uint8_t>()->default_value("1"))
     ("p,hex-prefix", "add '0x' prefix to hex values", cxxopts::value<bool>()->default_value("false"))
+    ("l,little-endian", "use little-endian byte order", cxxopts::value<bool>()->default_value("false"))
     ("s,group-separator", "choose byte group separator", cxxopts::value<std::string>()->default_value(" "))
     ("u,uppercase", "use uppercase hex values", cxxopts::value<bool>()->default_value("false"))
     ("v,verbose", "verbose output", cxxopts::value<bool>()->default_value("false"))

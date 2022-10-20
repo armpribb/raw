@@ -15,7 +15,8 @@ target_sources(raw_static PUBLIC
     log.cpp
     output.cpp
     output_adapter.cpp
-    parse.cpp)
+    parse.cpp
+    stream_io.cpp)
 
 if(WIN)
     target_compile_definitions(raw_static PUBLIC UNICODE)

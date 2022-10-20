@@ -1,59 +1,13 @@
 #include "convert_v2.h"
-#include "file_io.h"
 #include "format.h"
 #include "input.h"
 #include "output.h"
-#include "types.h"
-
-#include <nowide/iostream.hpp>
 
 namespace convert {
 
 engine_v2::engine_v2(convert_config_v2 config_)
-    : file(fileio::get_fstream_provider()), config(std::move(config_)),
-      iostream({.err = &nowide::cerr}) {
-  if (config.input == input_type::console &&
-      config.output == output_type::console) {
-    iostream.in = &nowide::cin;
-    iostream.info = &nowide::cout;
-    iostream.out = &nowide::cout;
-  } else if (config.input == input_type::console &&
-             config.output == output_type::clipboard) {
-    iostream.in = &nowide::cin;
-    iostream.info = &nowide::cout;
-  } else if (config.input == input_type::console &&
-             config.output == output_type::file) {
-    iostream.in = &nowide::cin;
-    iostream.info = &nowide::cout;
-    iostream.out = file->get_ostream(config.out_file);
-  } else if (config.input == input_type::file &&
-             config.output == output_type::console) {
-    iostream.in = file->get_istream(config.in_file);
-    iostream.info = &nowide::cout;
-    iostream.out = &nowide::cout;
-  } else if (config.input == input_type::file &&
-             config.output == output_type::clipboard) {
-    iostream.in = file->get_istream(config.in_file);
-    iostream.info = &nowide::cout;
-    iostream.prompt = &nowide::cin;
-  } else if (config.input == input_type::file &&
-             config.output == output_type::file) {
-    iostream.in = file->get_istream(config.in_file);
-    iostream.info = &nowide::cout;
-    iostream.out = file->get_ostream(config.out_file);
-  } else if (config.input == input_type::file_batch &&
-             config.output == output_type::console) {
-    iostream.info = &nowide::cout;
-    iostream.out = &nowide::cout;
-  } else if (config.input == input_type::file_batch &&
-             config.output == output_type::clipboard) {
-    iostream.info = &nowide::cout;
-    iostream.prompt = &nowide::cin;
-  } else if (config.input == input_type::file_batch &&
-             config.output == output_type::file) {
-    iostream.out = file->get_ostream(config.out_file);
-  }
-}
+    : fileio(fileio::get_fstream_provider()), config(std::move(config_)),
+      iostream(streamio::get_stream_provider(*fileio, config)) {}
 
 void engine_v2::run() const {
   if (config.input == input_type::file_batch) {
@@ -79,10 +33,13 @@ bool engine_v2::proceed(const format_config &format) const {
   if (iostream.prompt.get() == nullptr)
     iostream.info << "> ";
 
-  const auto raw_data = input::read(iostream.in);
+  auto raw_data = input::read(iostream.in);
 
   if (raw_data.empty())
     return false;
+
+  if (config.format.use_little_endian)
+    std::reverse(raw_data.begin(), raw_data.end());
 
   const auto formatted_string = format::process(raw_data, format);
   write(formatted_string);
