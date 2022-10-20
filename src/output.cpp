@@ -6,8 +6,7 @@ namespace output {
 
 void write_to_clipboard(const std::string &str) { copy_to_clipboard(str); }
 
-void write_to_clipboard(const std::string &str,
-                        const streamio::provider &ios) {
+void write_to_clipboard(const std::string &str, const streamio::provider &ios) {
   if (copy_to_clipboard(str)) {
     if (ios.prompt.get() != nullptr) {
       ios.info << "(hit enter to continue)";
@@ -19,8 +18,7 @@ void write_to_clipboard(const std::string &str,
   }
 }
 
-void write_to_stream(const std::string &str,
-                     const streamio::provider &ios) {
+void write_to_stream(const std::string &str, const streamio::provider &ios) {
   ios.info << "< ";
   ios.out << str << "\n";
 }

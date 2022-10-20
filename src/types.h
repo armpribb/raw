@@ -2,8 +2,6 @@
 
 #include <cstdint>
 #include <functional>
-#include <istream>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -42,27 +40,7 @@ struct convert_config {
   input_type input;
   output_type output;
   bool verbose;
-  std::vector<std::string> input_args;
-  set_string_func set_result;
-};
-
-struct convert_config_v2 {
-  format_config format;
-  input_type input;
-  output_type output;
   std::string in_file;
   std::string out_file;
   std::vector<std::string> in_args;
-};
-
-struct stream_provider {
-  stream_provider(std::ostream &cerr, std::istream &cin, std::ostream &cout)
-      : err(cerr), in(cin), out(cout), secondary_out(cout) {}
-  stream_provider(std::ostream &cerr, std::istream &cin, std::ostream &cout,
-                  std::ostream &secondary_cout)
-      : err(cerr), in(cin), out(cout), secondary_out(secondary_cout) {}
-  std::ostream &err;
-  std::istream &in;
-  std::ostream &out;
-  std::ostream &secondary_out;
 };

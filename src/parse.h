@@ -11,7 +11,6 @@ public:
   interface() = default;
   virtual ~interface() = default;
   virtual convert_config do_parse(int argc, char **argv) = 0;
-  virtual convert_config_v2 do_parse_v2(int argc, char **argv) = 0;
 
 protected:
   interface(const interface &) = default;

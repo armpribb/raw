@@ -65,7 +65,7 @@ std::istream *fstream_provider_impl::get_istream(const std::string &filename) {
   return nullptr;
 }
 
-std::unique_ptr<provider> get_fstream_provider() {
+std::unique_ptr<provider> get_provider() {
   return std::make_unique<fstream_provider_impl>();
 }
 

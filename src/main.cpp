@@ -10,8 +10,8 @@ int main(int argc, char *argv[]) {
   // stream_provider ios{nowide::cerr, nowide::cin, nowide::cout};
 
   const auto parser = parse::get_parser(log.queue());
-  const auto config = parser->do_parse_v2(argc, argv);
-  const auto converter = convert::get_converter_v2(config);
+  const auto config = parser->do_parse(argc, argv);
+  const auto converter = convert::get_converter(config);
 
   log.print_queued();
 

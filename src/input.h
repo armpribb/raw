@@ -7,5 +7,5 @@
 
 namespace input {
 std::vector<uint8_t> read(const std::string &str);
-std::vector<uint8_t> read(const streamio::istream_wrap &is);
+std::vector<uint8_t> read(streamio::instream is);
 } // namespace input

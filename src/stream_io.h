@@ -8,12 +8,12 @@
 
 namespace streamio {
 
-class ostream_wrap {
+class outstream {
 public:
-  ostream_wrap() = default;
-  ostream_wrap(std::ostream *ptr) : ostream_ptr(ptr) {}
+  outstream() = default;
+  outstream(std::ostream *ptr) : ostream_ptr(ptr) {}
 
-  template <typename T> const ostream_wrap &operator<<(const T &obj) const {
+  template <typename T> const outstream &operator<<(const T &obj) const {
     if (ostream_ptr) {
       *ostream_ptr << obj;
     }
@@ -25,12 +25,12 @@ private:
   std::ostream *ostream_ptr = nullptr;
 };
 
-class istream_wrap {
+class instream {
 public:
-  istream_wrap() = default;
-  istream_wrap(std::istream *ptr) : istream_ptr(ptr) {}
+  instream() = default;
+  instream(std::istream *ptr) : istream_ptr(ptr) {}
 
-  template <typename T> const istream_wrap &operator>>(T &obj) const {
+  template <typename T> const instream &operator>>(T &obj) const {
     if (istream_ptr) {
       *istream_ptr >> obj;
     }
@@ -43,14 +43,13 @@ private:
 };
 
 struct provider {
-  ostream_wrap err;
-  istream_wrap in;
-  ostream_wrap info;
-  ostream_wrap out;
-  istream_wrap prompt;
+  outstream err;
+  instream in;
+  outstream info;
+  outstream out;
+  instream prompt;
 };
 
-provider get_stream_provider(fileio::provider &fileio,
-                             const convert_config_v2 &config);
+provider get_provider(fileio::provider &fileio, const convert_config &config);
 
 } // namespace streamio

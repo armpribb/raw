@@ -55,7 +55,6 @@ public:
   explicit engine(print_func _print);
 
   convert_config do_parse(int argc, char **argv) override;
-  convert_config_v2 do_parse_v2(int argc, char **argv) override;
 
 private:
   cxxopts::Options cxx_options;
@@ -110,38 +109,6 @@ convert_config engine::do_parse(int argc, char **argv) {
   result.input = detail::get_input(cxx_result);
   result.output = detail::get_output(cxx_result);
   result.verbose = cxx_result["verbose"].as<bool>();
-
-  result.input_args = cxx_result["args"].as<std::vector<std::string>>();
-
-  return result;
-}
-
-convert_config_v2 engine::do_parse_v2(int argc, char **argv) {
-  nowide::args _(argc, argv);
-
-  cxxopts::ParseResult cxx_result{};
-
-  try {
-    cxx_result = cxx_options.parse(argc, argv);
-  } catch (const cxxopts::OptionException &e) {
-    print(e.what());
-    print(cxx_options.help());
-    return {};
-  }
-
-  convert_config_v2 result{};
-
-  auto is_help_cmd = cxx_result["help"].as<bool>();
-
-  if (is_help_cmd) {
-    print(cxx_options.help());
-    return result;
-  }
-
-  result.format = detail::get_format(cxx_result);
-  result.input = detail::get_input(cxx_result);
-  result.output = detail::get_output(cxx_result);
-  // result.verbose = cxx_result["verbose"].as<bool>();
   result.in_file = cxx_result["infile"].as<std::string>();
   result.out_file = cxx_result["outfile"].as<std::string>();
   result.in_args = cxx_result["args"].as<std::vector<std::string>>();

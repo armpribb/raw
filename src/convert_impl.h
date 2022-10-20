@@ -1,31 +1,24 @@
 #pragma once
 
 #include "convert.h"
-
 #include "file_io.h"
-#include "format.h"
-#include "input.h"
-#include "input_adapter.h"
-#include "output.h"
-#include "output_adapter.h"
-#include "types.h"
+#include "stream_io.h"
 
 namespace convert {
 
 class engine : public interface {
 public:
-  engine(std::unique_ptr<format::interface> fmt,
-         std::unique_ptr<input::interface> in,
-         std::unique_ptr<output::interface> out, stream_provider &ios);
+  engine(convert_config config_);
 
   void run() const override;
-  [[nodiscard]] bool proceed() const;
+  bool proceed(const format_config &format) const;
 
 private:
-  std::unique_ptr<format::interface> formatter;
-  std::unique_ptr<input::interface> input_adapter;
-  std::unique_ptr<output::interface> output_adapter;
-  stream_provider &iostream;
+  void run_file_batch() const;
+
+  std::unique_ptr<fileio::provider> m_fileio;
+  convert_config m_config;
+  streamio::provider m_streamio;
 };
 
 } // namespace convert

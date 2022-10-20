@@ -1,64 +1,87 @@
 #include "convert_impl.h"
+#include "format.h"
+#include "input.h"
+#include "output.h"
 #include "stream_io.h"
-
-#include <array>
-#include <memory>
-#include <sstream>
-#include <utility>
+#include "types.h"
 
 namespace convert {
 
 namespace detail {
-std::string get_example_format(const format_config &config = {}) {
-  constexpr auto example = "Hello, World!";
-  const auto byte_vec = input::read(example);
-  const auto result = format::process(byte_vec, config);
+std::string get_example_output(const format_config &config) {
+  constexpr auto example_str = "Hello, World!";
+  auto raw_data = input::read(example_str);
+  if (config.use_little_endian)
+    std::reverse(raw_data.begin(), raw_data.end());
+  return format::process(raw_data, config);
+}
 
-  return "format: " + result + " (\"" + example + "\")";
+void print_verbose_info(streamio::outstream info,
+                        const convert_config &config) {
+  info << get_example_output(config.format) << "\n";
+}
+
+void write_to_output(const streamio::provider &ios, const std::string &str,
+                     bool use_clipbard) {
+  if (use_clipbard) {
+    output::write_to_clipboard(str, ios);
+    return;
+  }
+  output::write_to_stream(str, ios);
 }
 } // namespace detail
 
-engine::engine(std::unique_ptr<format::interface> fmt,
-               std::unique_ptr<input::interface> in,
-               std::unique_ptr<output::interface> out, stream_provider &ios)
-    : formatter(std::move(fmt)), input_adapter(std::move(in)),
-      output_adapter(std::move(out)), iostream(ios) {}
+engine::engine(convert_config config_)
+    : m_fileio(fileio::get_provider()), m_config(std::move(config_)),
+      m_streamio(streamio::get_provider(*m_fileio, m_config)) {}
 
-bool engine::proceed() const {
-  const auto raw_input = input_adapter->read(iostream);
-
-  if (raw_input.empty()) {
-    return false;
+void engine::run() const {
+  if (m_config.verbose) {
+    detail::print_verbose_info(m_streamio.info, m_config);
   }
 
-  const auto formatted_output = formatter->process(raw_input);
+  if (m_config.input == input_type::file_batch) {
+    run_file_batch();
+    return;
+  }
 
-  output_adapter->write(formatted_output, iostream);
+  while (proceed(m_config.format))
+    ;
+}
+
+void engine::run_file_batch() const {
+  const auto &filenames = m_config.in_args;
+  for (auto &filename : filenames) {
+    auto raw_data = fileio::read_file_as_binary(filename);
+    auto formatted_string = format::process(raw_data, m_config.format);
+    m_streamio.info << "<" << filename << ">\n";
+    detail::write_to_output(m_streamio, formatted_string,
+                            m_config.output == output_type::clipboard);
+  }
+}
+
+bool engine::proceed(const format_config &format) const {
+  if (m_streamio.prompt.get() == nullptr)
+    m_streamio.info << "> ";
+
+  auto raw_data = input::read(m_streamio.in);
+
+  if (raw_data.empty())
+    return false;
+
+  if (m_config.format.use_little_endian)
+    std::reverse(raw_data.begin(), raw_data.end());
+
+  const auto formatted_string = format::process(raw_data, format);
+  detail::write_to_output(m_streamio, formatted_string,
+                          m_config.output == output_type::clipboard);
 
   return true;
 }
 
-void engine::run() const {
-  while (proceed())
-    ;
-}
-
-std::unique_ptr<convert::interface> get_converter(const convert_config &config,
-                                                  stream_provider &ios,
-                                                  print_func print) {
-  auto fmt = format::get_format_engine(config.format);
-  auto in = input::get_input_adapter(config.input, config.input_args);
-  auto out = output::get_output_adapter(config.output, config.set_result);
-
-  if (config.verbose) {
-    const auto example = detail::get_example_format(config.format);
-    print(example);
-    print(in->info());
-    print(out->info());
-  }
-
-  return std::make_unique<convert::engine>(std::move(fmt), std::move(in),
-                                           std::move(out), ios);
+std::unique_ptr<convert::interface>
+get_converter(const convert_config &config) {
+  return std::make_unique<convert::engine>(config);
 }
 
 } // namespace convert

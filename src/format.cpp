@@ -1,4 +1,4 @@
-#include "format_impl.h"
+#include "format.h"
 
 #include <algorithm>
 #include <cassert>
@@ -99,15 +99,6 @@ std::string process(const std::vector<uint8_t> &raw_data,
 
   return detail::combine_to_string(hex_strings, config.byte_separator,
                                    config.use_hex_prefix);
-}
-
-std::string engine::process(const std::vector<uint8_t> &raw_data) const {
-  return format::process(raw_data, config);
-}
-
-std::unique_ptr<format::interface>
-get_format_engine(const format_config &config) {
-  return std::make_unique<format::engine>(config);
 }
 
 } // namespace format

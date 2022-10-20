@@ -2,6 +2,8 @@
 
 #include "types.h"
 
+#include <ostream>
+
 class logger {
 public:
   explicit logger(std::ostream &ostr) : output_stream(ostr) {}

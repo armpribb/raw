@@ -23,6 +23,6 @@ protected:
   provider &operator=(provider &&) = default;
 };
 
-std::unique_ptr<provider> get_fstream_provider();
+std::unique_ptr<provider> get_provider();
 
 } // namespace fileio

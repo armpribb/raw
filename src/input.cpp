@@ -20,7 +20,7 @@ std::vector<uint8_t> read(const std::string &str) {
   return detail::to_byte_vector(str);
 }
 
-std::vector<uint8_t> read(const streamio::istream_wrap &is) {
+std::vector<uint8_t> read(streamio::instream is) {
   std::string input_str{};
 
   if (is.get() != nullptr) {
