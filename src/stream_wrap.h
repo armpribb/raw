@@ -40,6 +40,7 @@ private:
 struct stream_provider_v2 {
   ostream_wrap err;
   istream_wrap in;
-  ostream_wrap out;
   ostream_wrap info;
+  ostream_wrap out;
+  istream_wrap prompt;
 };

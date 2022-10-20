@@ -14,8 +14,6 @@ public:
   bool proceed(const format_config &format) const;
 
 private:
-  void determine_in_stream();
-  void determine_out_stream();
   void run_file_batch() const;
   void write(const std::string &str) const;
 

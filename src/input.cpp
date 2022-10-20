@@ -1,4 +1,5 @@
 #include "input.h"
+#include "stream_wrap.h"
 
 #include <algorithm>
 #include <iterator>
@@ -19,12 +20,11 @@ std::vector<uint8_t> read(const std::string &str) {
   return detail::to_byte_vector(str);
 }
 
-std::vector<uint8_t> read(const stream_provider_v2 &ios) {
+std::vector<uint8_t> read(const istream_wrap &is) {
   std::string input_str{};
 
-  ios.info << "> ";
-  if (ios.in.get() != nullptr) {
-    std::getline(*ios.in.get(), input_str);
+  if (is.get() != nullptr) {
+    std::getline(*is.get(), input_str);
   }
 
   return detail::to_byte_vector(input_str);
