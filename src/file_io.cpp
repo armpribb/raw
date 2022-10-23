@@ -1,15 +1,16 @@
 #include "file_io.h"
-#include "stream_io.h"
 
 #include <map>
 #include <nowide/fstream.hpp>
 
 namespace fileio {
 
-std::vector<uint8_t> read_file_as_binary(const std::string &filename) {
+std::vector<uint8_t> read_file_as_binary(const std::string &filename,
+                                         streamio::outstream err) {
   nowide::ifstream input_file(filename, std::ios::binary);
 
   if (!input_file.is_open()) {
+    err << "<could not open file '" << filename << "'>\n";
     return {};
   }
 
@@ -21,7 +22,7 @@ std::vector<uint8_t> read_file_as_binary(const std::string &filename) {
   return byte_vec;
 }
 
-class fstream_provider_impl : public provider {
+class provider_impl : public provider {
 public:
   std::ostream *get_ostream(const std::string &filename) override;
   std::istream *get_istream(const std::string &filename) override;
@@ -31,7 +32,7 @@ private:
   std::map<std::string, nowide::ofstream> out_files;
 };
 
-std::ostream *fstream_provider_impl::get_ostream(const std::string &filename) {
+std::ostream *provider_impl::get_ostream(const std::string &filename) {
   if (filename.empty())
     return nullptr;
 
@@ -48,7 +49,7 @@ std::ostream *fstream_provider_impl::get_ostream(const std::string &filename) {
   return nullptr;
 }
 
-std::istream *fstream_provider_impl::get_istream(const std::string &filename) {
+std::istream *provider_impl::get_istream(const std::string &filename) {
   if (filename.empty())
     return nullptr;
 
@@ -66,7 +67,7 @@ std::istream *fstream_provider_impl::get_istream(const std::string &filename) {
 }
 
 std::unique_ptr<provider> get_provider() {
-  return std::make_unique<fstream_provider_impl>();
+  return std::make_unique<provider_impl>();
 }
 
 } // namespace fileio

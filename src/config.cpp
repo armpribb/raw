@@ -1,11 +1,12 @@
-#include "stream_io.h"
+#include "config.h"
 
 #include <nowide/iostream.hpp>
 
-namespace streamio {
+namespace config {
 
-provider get_provider(fileio::provider &fileio, const convert_config &config) {
-  provider streamio{.err = &nowide::cerr};
+streamio::provider get_stream_provider(fileio::provider &fileio,
+                                       const convert_config &config) {
+  streamio::provider streamio{.err = &nowide::cerr};
 
   if (config.input == input_type::console &&
       config.output == output_type::console) {
@@ -52,4 +53,4 @@ provider get_provider(fileio::provider &fileio, const convert_config &config) {
   return streamio;
 }
 
-} // namespace streamio
+} // namespace config

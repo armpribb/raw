@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>
-
 #include "types.h"
+
+#include <memory>
 
 namespace parse {
 

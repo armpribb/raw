@@ -1,9 +1,7 @@
 #include "input.h"
-#include "stream_io.h"
 
 #include <algorithm>
 #include <iterator>
-#include <string>
 
 namespace input {
 
@@ -16,17 +14,22 @@ constexpr std::vector<uint8_t> to_byte_vector(const std::string &str) {
 }
 } // namespace detail
 
-std::vector<uint8_t> read(const std::string &str) {
-  return detail::to_byte_vector(str);
+std::vector<uint8_t> read_string(const std::string &str, bool little_endian) {
+  auto raw_data = detail::to_byte_vector(str);
+
+  if (little_endian)
+    std::reverse(raw_data.begin(), raw_data.end());
+
+  return raw_data;
 }
 
-std::vector<uint8_t> read(streamio::instream is) {
+std::vector<uint8_t> read_stream(streamio::instream in, bool little_endian) {
   std::string input_str{};
 
-  if (is.get() != nullptr) {
-    std::getline(*is.get(), input_str);
+  if (in) {
+    std::getline(*in.get(), input_str);
   }
 
-  return detail::to_byte_vector(input_str);
+  return read_string(input_str, little_endian);
 }
 } // namespace input

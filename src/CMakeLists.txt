@@ -6,14 +6,14 @@ target_include_directories(raw_include INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(raw_static STATIC)
 
 target_sources(raw_static PUBLIC
+    config.cpp
     convert_impl.cpp
     file_io.cpp
     format.cpp
     input.cpp
     log.cpp
     output.cpp
-    parse.cpp
-    stream_io.cpp)
+    parse.cpp)
 
 if(WIN)
     target_compile_definitions(raw_static PUBLIC UNICODE)

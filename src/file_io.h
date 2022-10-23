@@ -1,12 +1,15 @@
 #pragma once
 
+#include "stream_io.h"
+
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace fileio {
 
-std::vector<uint8_t> read_file_as_binary(const std::string &filename);
+std::vector<uint8_t> read_file_as_binary(const std::string &filename,
+                                         streamio::outstream err = nullptr);
 
 class provider {
 public:

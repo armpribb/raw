@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include "stream_io.h"
+
+#include <string>
 
 namespace output {
 void write_to_clipboard(const std::string &str);

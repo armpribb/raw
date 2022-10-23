@@ -3,9 +3,6 @@
 #include <istream>
 #include <ostream>
 
-#include "file_io.h"
-#include "types.h"
-
 namespace streamio {
 
 class outstream {
@@ -20,6 +17,8 @@ public:
     return *this;
   }
   std::ostream *get() const { return ostream_ptr; }
+
+  constexpr operator bool() const { return ostream_ptr != nullptr; }
 
 private:
   std::ostream *ostream_ptr = nullptr;
@@ -38,6 +37,8 @@ public:
   }
   std::istream *get() const { return istream_ptr; }
 
+  constexpr operator bool() const { return istream_ptr != nullptr; }
+
 private:
   std::istream *istream_ptr = nullptr;
 };
@@ -49,7 +50,5 @@ struct provider {
   outstream out;
   instream prompt;
 };
-
-provider get_provider(fileio::provider &fileio, const convert_config &config);
 
 } // namespace streamio
